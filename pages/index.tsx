@@ -1,4 +1,12 @@
+import { useEffect } from 'react';
+import { apiUrl } from '../api';
+
 export default function Home() {
+  useEffect(() => {
+    fetch(`${apiUrl}/articles`)
+      .then(r => r.json())
+      .then(data => console.log(data));
+  }, []);
   return (
     <div className="home-page">
       <div className="banner">
