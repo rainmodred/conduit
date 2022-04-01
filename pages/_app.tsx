@@ -1,3 +1,4 @@
+import { AuthProvider } from '../AuthContext';
 import Layout from '../components/Layout';
 import '../styles/globals.css';
 
@@ -11,11 +12,23 @@ if (process.env.NEXT_PUBLIC_API_MOCKING === 'enabled') {
   }
 }
 
+interface AllProvidersProps {
+  children: React.ReactNode;
+}
+
+function AllProviders({ children }: AllProvidersProps): JSX.Element {
+  return (
+    <AuthProvider>
+      <Layout>{children}</Layout>
+    </AuthProvider>
+  );
+}
+
 function MyApp({ Component, pageProps }) {
   return (
-    <Layout>
+    <AllProviders>
       <Component {...pageProps} />
-    </Layout>
+    </AllProviders>
   );
 }
 

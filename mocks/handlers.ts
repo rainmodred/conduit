@@ -65,4 +65,35 @@ export const handlers = [
       }),
     );
   }),
+
+  rest.post(`${apiUrl}/users`, (req, res, ctx) => {
+    const { username, email } = req.body?.user;
+
+    const errorMessage = 'has already been taken';
+    const errors: Record<string, [string]> = {};
+    if (username === 'error') {
+      errors['username'] = [errorMessage];
+    }
+    if (email === 'error@example.com') {
+      errors['email'] = [errorMessage];
+    }
+
+    if (Object.keys(errors).length > 0) {
+      return res(
+        ctx.status(422),
+        ctx.json({
+          errors,
+        }),
+      );
+    }
+
+    return res(
+      ctx.status(200),
+      ctx.json({
+        user: {
+          username: 'test',
+        },
+      }),
+    );
+  }),
 ];

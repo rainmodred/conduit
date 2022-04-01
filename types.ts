@@ -16,4 +16,14 @@ interface Article {
   };
 }
 
-export type { Article };
+interface User {
+  email: string;
+  token: string;
+  username: string;
+  bio: string;
+  image: string;
+}
+
+type ApiErrorsType = Record<string, string>;
+
+export type { Article, User, ApiErrorsType };
