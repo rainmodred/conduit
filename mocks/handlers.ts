@@ -1,6 +1,17 @@
 import { rest } from 'msw';
 import { apiUrl } from '../api';
 
+const loggedUser = {
+  user: {
+    email: 'conduitTest@example.com',
+    username: 'conduitTest',
+    bio: null,
+    image: 'https://api.realworld.io/images/smiley-cyrus.jpeg',
+    token:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNvbmR1aXRUZXN0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJjb25kdWl0VGVzdCIsImlhdCI6MTY0ODkwNzM1MywiZXhwIjoxNjU0MDkxMzUzfQ.tZxbSHR8BJg6WGXOy3keP8DrGCZByiwdXzdDZzj4--U',
+  },
+};
+
 export const handlers = [
   rest.get(`${apiUrl}/articles`, (req, res, ctx) => {
     return res(
@@ -87,13 +98,22 @@ export const handlers = [
       );
     }
 
-    return res(
-      ctx.status(200),
-      ctx.json({
-        user: {
-          username: 'test',
-        },
-      }),
-    );
+    return res(ctx.status(200), ctx.json(loggedUser));
+  }),
+
+  rest.post(`${apiUrl}/users/login`, (req, res, ctx) => {
+    const { email, password } = req.body?.user;
+    if (email === 'error@example.com' || password === 'error') {
+      return res(
+        ctx.status(403),
+        ctx.json({
+          errors: {
+            'email or password': ['is invalid'],
+          },
+        }),
+      );
+    }
+
+    return res(ctx.status(200), ctx.json(loggedUser));
   }),
 ];

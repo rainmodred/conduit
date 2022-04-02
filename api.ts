@@ -45,4 +45,15 @@ function signUp(
   return fetcher('users', 'POST', data);
 }
 
-export { apiUrl, signUp };
+function signIn(email: string, password: string): Promise<{ user: User }> {
+  const data = {
+    user: {
+      email,
+      password,
+    },
+  };
+
+  return fetcher('users/login', 'POST', data);
+}
+
+export { apiUrl, signUp, signIn };
