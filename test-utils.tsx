@@ -1,9 +1,14 @@
 import React, { ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import Layout from './components/Layout';
+import { AuthProvider } from './AuthContext';
 
 const AllTheProviders = ({ children }) => {
-  return <Layout>{children}</Layout>;
+  return (
+    <AuthProvider>
+      <Layout>{children}</Layout>;
+    </AuthProvider>
+  );
 };
 
 const customRender = (

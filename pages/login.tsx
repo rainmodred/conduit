@@ -20,6 +20,7 @@ const schema = z.object({
 export default function Login() {
   const [, setUser] = useAuth();
   const [apiErrors, setApiErrors] = useState<ApiErrorsType>({});
+  const [IsFormDisabled, setIsFormDisabled] = useState(false);
   const {
     register,
     handleSubmit,
@@ -29,12 +30,15 @@ export default function Login() {
 
   function onSubmit({ email, password }: FormValues) {
     setApiErrors({});
+    setIsFormDisabled(true);
     signIn(email, password).then(
       response => {
+        setIsFormDisabled(false);
         setUser(response.user);
         router.push('/');
       },
       error => {
+        setIsFormDisabled(false);
         setApiErrors(error.errors);
       },
     );
@@ -45,7 +49,7 @@ export default function Login() {
       <div className="container page">
         <div className="row">
           <div className="col-md-6 offset-md-3 col-xs-12">
-            <h1 className="text-xs-center">Sign up</h1>
+            <h1 className="text-xs-center">Sign in</h1>
             <p className="text-xs-center">
               <a href="">Have an account?</a>
             </p>
@@ -65,7 +69,7 @@ export default function Login() {
             </ul>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              <fieldset className="form-group">
+              <fieldset disabled={IsFormDisabled} className="form-group">
                 <input
                   {...register('email')}
                   className="form-control form-control-lg"
@@ -73,7 +77,7 @@ export default function Login() {
                   placeholder="Email"
                 />
               </fieldset>
-              <fieldset className="form-group">
+              <fieldset disabled={IsFormDisabled} className="form-group">
                 <input
                   {...register('password')}
                   className="form-control form-control-lg"
@@ -82,7 +86,7 @@ export default function Login() {
                 />
               </fieldset>
               <button className="btn btn-lg btn-primary pull-xs-right">
-                Sign up
+                Sign in
               </button>
             </form>
           </div>
