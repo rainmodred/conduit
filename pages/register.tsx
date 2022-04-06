@@ -3,7 +3,7 @@ import { useAuth } from '../AuthContext';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { signUp } from '../api';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ApiErrorsType } from '../types';
 import { useRouter } from 'next/router';
 
@@ -20,8 +20,9 @@ const schema = z.object({
 });
 
 export default function Register() {
-  const [user, setUser] = useAuth();
+  const [, setUser] = useAuth();
   const [apiErrors, setApiErrors] = useState<ApiErrorsType>({});
+  const [IsFormDisabled, setIsFormDisabled] = useState(false);
   const {
     register,
     handleSubmit,
@@ -29,19 +30,16 @@ export default function Register() {
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
   const router = useRouter();
 
-  // useEffect(() => {
-  //   if (user) {
-  //     router.push('/');
-  //   }
-  // }, [user, router]);
-
   function onSubmit({ email, username, password }: FormValues) {
     setApiErrors({});
     signUp(email, username, password).then(
       response => {
+        setIsFormDisabled(false);
         setUser(response.user);
+        router.push('/');
       },
       error => {
+        setIsFormDisabled(false);
         setApiErrors(error.errors);
       },
     );
@@ -63,7 +61,6 @@ export default function Register() {
               ))}
 
               {Object.keys(apiErrors).map(errorKey => {
-                console.log('errorKey', errorKey);
                 return (
                   <li key={`apiError-${errorKey}`}>
                     {errorKey} {apiErrors[errorKey]}
@@ -73,15 +70,15 @@ export default function Register() {
             </ul>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              <fieldset className="form-group">
+              <fieldset disabled={IsFormDisabled} className="form-group">
                 <input
                   {...register('username')}
                   className="form-control form-control-lg"
                   type="text"
-                  placeholder="Your Name"
+                  placeholder="Username"
                 />
               </fieldset>
-              <fieldset className="form-group">
+              <fieldset disabled={IsFormDisabled} className="form-group">
                 <input
                   {...register('email')}
                   className="form-control form-control-lg"
@@ -89,7 +86,7 @@ export default function Register() {
                   placeholder="Email"
                 />
               </fieldset>
-              <fieldset className="form-group">
+              <fieldset disabled={IsFormDisabled} className="form-group">
                 <input
                   {...register('password')}
                   className="form-control form-control-lg"
