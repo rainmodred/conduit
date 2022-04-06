@@ -6,6 +6,7 @@ import { signIn } from '../api';
 import { useState } from 'react';
 import { ApiErrorsType } from '../types';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 type FormValues = {
   email: string;
@@ -51,7 +52,9 @@ export default function Login() {
           <div className="col-md-6 offset-md-3 col-xs-12">
             <h1 className="text-xs-center">Sign in</h1>
             <p className="text-xs-center">
-              <a href="">Have an account?</a>
+              <Link href="/register">
+                <a>Need an account?</a>
+              </Link>
             </p>
 
             <ul className="error-messages">

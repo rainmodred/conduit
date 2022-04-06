@@ -1,27 +1,9 @@
+import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '../../test-utils';
 
-import userEvent from '@testing-library/user-event';
-
-import { useRouter } from 'next/router';
 import Login from '../../pages/login';
 
-jest.mock('next/router', () => ({
-  useRouter: jest.fn(),
-}));
-
 describe('Login page', () => {
-  const push = jest.fn();
-  useRouter.mockImplementation(() => ({
-    push,
-    pathname: '/',
-    route: '/',
-    asPath: '/',
-    query: '',
-  }));
-  afterAll(() => {
-    jest.clearAllMocks();
-  });
-
   it('should render', () => {
     render(<Login />);
 
@@ -32,6 +14,16 @@ describe('Login page', () => {
     ).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
+  });
+
+  it('should have link to register page', async () => {
+    render(<Login />);
+
+    expect(
+      screen.getByRole('link', {
+        name: 'Need an account?',
+      }),
+    ).toHaveAttribute('href', '/register');
   });
 
   it('should show missing password error', async () => {
@@ -83,7 +75,8 @@ describe('Login page', () => {
   });
 
   it('should redirect on login', async () => {
-    render(<Login />);
+    const push = jest.fn();
+    render(<Login />, { router: { push } });
     const user = userEvent.setup();
 
     await user.type(
