@@ -1,9 +1,10 @@
 import React, { ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
-import { AuthProvider } from './context/AuthContext';
 
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { NextRouter } from 'next/router';
+import { User } from './types';
+import { AuthContext } from './context/AuthContext';
 
 const mockRouter: NextRouter = {
   basePath: '',
@@ -38,7 +39,7 @@ interface AllTheProvidersProps {
 const AllTheProviders = ({ children, router }: AllTheProvidersProps) => {
   return (
     <RouterContext.Provider value={{ ...mockRouter, ...router }}>
-      <AuthProvider>{children}</AuthProvider>
+      {children}
     </RouterContext.Provider>
   );
 };
@@ -55,5 +56,39 @@ const customRender = (
   });
 };
 
+function renderWithProviders(children: React.ReactNode, user: User | null) {
+  const setUser = jest.fn();
+  return customRender(
+    <AuthContext.Provider value={[user, setUser]}>
+      {children}
+    </AuthContext.Provider>,
+  );
+}
+
+function renderWithAuthProvider(
+  children: React.ReactNode,
+  user: User | null = null,
+) {
+  const setUser = jest.fn();
+  return (
+    <AuthContext.Provider value={[user, setUser]}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+const mockUser: User = {
+  username: 'user',
+  bio: 'test',
+  email: 'email@example.com',
+  image: 'https://test.com/image.jpg',
+  token: '12345',
+};
+
 export * from '@testing-library/react';
-export { customRender as render };
+export {
+  customRender as render,
+  renderWithProviders,
+  renderWithAuthProvider,
+  mockUser,
+};
