@@ -1,11 +1,28 @@
 import userEvent from '@testing-library/user-event';
-import { render, screen, waitFor } from '../../test-utils';
+import {
+  mockUser,
+  render,
+  renderWithAuthProvider,
+  screen,
+  waitFor,
+} from '../../test-utils';
 
 import Login from '../../pages/login';
+import { AuthContext } from '../../context/AuthContext';
+import { User } from '../../types';
+
+function AllProviders(user: User | null = null) {
+  const setUser = jest.fn();
+  return (
+    <AuthContext.Provider value={[user, setUser]}>
+      <Login />
+    </AuthContext.Provider>
+  );
+}
 
 describe('Login page', () => {
   it('should render', () => {
-    render(<Login />);
+    render(renderWithAuthProvider(<Login />));
 
     expect(
       screen.getByRole('heading', {
@@ -17,7 +34,7 @@ describe('Login page', () => {
   });
 
   it('should have link to register page', async () => {
-    render(<Login />);
+    render(renderWithAuthProvider(<Login />));
 
     expect(
       screen.getByRole('link', {
@@ -27,7 +44,7 @@ describe('Login page', () => {
   });
 
   it('should show missing password error', async () => {
-    render(<Login />);
+    render(renderWithAuthProvider(<Login />));
     const user = userEvent.setup();
 
     await user.type(screen.getByPlaceholderText(/email/i), 'test@example.com');
@@ -42,7 +59,7 @@ describe('Login page', () => {
   });
 
   it('should show missing email error', async () => {
-    render(<Login />);
+    render(renderWithAuthProvider(<Login />));
     const user = userEvent.setup();
 
     await user.type(screen.getByPlaceholderText(/password/i), 'password');
@@ -57,7 +74,7 @@ describe('Login page', () => {
   });
 
   it('should show invalid credentials error', async () => {
-    render(<Login />);
+    render(renderWithAuthProvider(<Login />));
     const user = userEvent.setup();
 
     await user.type(screen.getByPlaceholderText(/email/i), 'test@example.com');
@@ -76,7 +93,7 @@ describe('Login page', () => {
 
   it('should redirect on login', async () => {
     const push = jest.fn();
-    render(<Login />, { router: { push } });
+    render(renderWithAuthProvider(<Login />), { router: { push } });
     const user = userEvent.setup();
 
     await user.type(
@@ -92,5 +109,14 @@ describe('Login page', () => {
     );
 
     await waitFor(() => expect(push).toBeCalledWith('/'));
+  });
+
+  it('should redirect if user already logged in', () => {
+    const push = jest.fn();
+    render(renderWithAuthProvider(<Login />, mockUser), {
+      router: { pathname: '/', push },
+    });
+
+    expect(push).toBeCalledWith('/');
   });
 });

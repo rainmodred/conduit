@@ -28,4 +28,4 @@ function useAuth(): AuthContextType {
   return context;
 }
 
-export { AuthProvider, useAuth };
+export { AuthProvider, AuthContext, useAuth };

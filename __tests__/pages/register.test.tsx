@@ -1,5 +1,11 @@
 import userEvent from '@testing-library/user-event';
-import { render, screen, waitFor } from '../../test-utils';
+import {
+  mockUser,
+  render,
+  renderWithAuthProvider,
+  screen,
+  waitFor,
+} from '../../test-utils';
 import Register from '../../pages/register';
 
 const testUser = {
@@ -10,7 +16,7 @@ const testUser = {
 
 describe('register page', () => {
   it('should render', () => {
-    render(<Register />);
+    render(renderWithAuthProvider(<Register />));
 
     expect(
       screen.getByRole('heading', {
@@ -23,7 +29,7 @@ describe('register page', () => {
   });
 
   it('should show missing password error', async () => {
-    render(<Register />);
+    render(renderWithAuthProvider(<Register />));
     const user = userEvent.setup();
 
     await user.type(screen.getByPlaceholderText(/email/i), testUser.email);
@@ -38,7 +44,7 @@ describe('register page', () => {
   });
 
   it('should show missing email error', async () => {
-    render(<Register />);
+    render(renderWithAuthProvider(<Register />));
     const user = userEvent.setup();
 
     await user.type(
@@ -56,7 +62,7 @@ describe('register page', () => {
   });
 
   it('should show missing username error', async () => {
-    render(<Register />);
+    render(renderWithAuthProvider(<Register />));
     const user = userEvent.setup();
 
     await user.type(screen.getByPlaceholderText(/email/i), testUser.email);
@@ -75,7 +81,7 @@ describe('register page', () => {
   });
 
   it('should show error if username has been taken', async () => {
-    render(<Register />);
+    render(renderWithAuthProvider(<Register />));
     const user = userEvent.setup();
 
     await user.type(screen.getByPlaceholderText(/username/i), 'error');
@@ -97,7 +103,7 @@ describe('register page', () => {
   });
 
   it('should show error if email has been taken', async () => {
-    render(<Register />);
+    render(renderWithAuthProvider(<Register />));
     const user = userEvent.setup();
 
     await user.type(
@@ -121,9 +127,9 @@ describe('register page', () => {
     ).toBeInTheDocument();
   });
 
-  it('should redirect on Register', async () => {
+  it('should redirect on register', async () => {
     const push = jest.fn();
-    render(<Register />, { router: { push } });
+    render(renderWithAuthProvider(<Register />), { router: { push } });
     const user = userEvent.setup();
 
     await user.type(
@@ -143,5 +149,14 @@ describe('register page', () => {
     );
 
     await waitFor(() => expect(push).toBeCalledWith('/'));
+  });
+
+  it('should redirect if user already logged in', () => {
+    const push = jest.fn();
+    render(renderWithAuthProvider(<Register />, mockUser), {
+      router: { pathname: '/', push },
+    });
+
+    expect(push).toBeCalledWith('/');
   });
 });

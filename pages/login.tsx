@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { signIn } from '../api';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ApiErrorsType } from '../types';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -19,7 +19,7 @@ const schema = z.object({
 });
 
 export default function Login() {
-  const [, setUser] = useAuth();
+  const [user, setUser] = useAuth();
   const [apiErrors, setApiErrors] = useState<ApiErrorsType>({});
   const [IsFormDisabled, setIsFormDisabled] = useState(false);
   const {
@@ -44,6 +44,12 @@ export default function Login() {
       },
     );
   }
+
+  useEffect(() => {
+    if (user) {
+      router.push('/');
+    }
+  }, [user, router]);
 
   return (
     <div className="auth-page">
