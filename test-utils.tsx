@@ -48,7 +48,7 @@ const customRender = (
   ui: ReactElement,
   options?: Omit<RenderOptions, 'wrapper'> & { router: Partial<NextRouter> },
 ) => {
-  render(ui, {
+  return render(ui, {
     wrapper: ({ children }) => (
       <AllTheProviders router={options?.router}>{children}</AllTheProviders>
     ),

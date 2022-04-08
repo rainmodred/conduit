@@ -8,17 +8,6 @@ import {
 } from '../../test-utils';
 
 import Login from '../../pages/login';
-import { AuthContext } from '../../context/AuthContext';
-import { User } from '../../types';
-
-function AllProviders(user: User | null = null) {
-  const setUser = jest.fn();
-  return (
-    <AuthContext.Provider value={[user, setUser]}>
-      <Login />
-    </AuthContext.Provider>
-  );
-}
 
 describe('Login page', () => {
   it('should render', () => {
