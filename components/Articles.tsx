@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import ArticlePreview from './ArticlePreview';
 import { apiUrl } from '../api';
@@ -16,6 +17,7 @@ function formatDate(date: string) {
 export default function Articles(): JSX.Element {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { query } = useRouter();
 
   useEffect(() => {
     fetch(`${apiUrl}/articles`)
@@ -30,11 +32,15 @@ export default function Articles(): JSX.Element {
     return <p>loading...</p>;
   }
 
-  console.log('artciles', articles);
+  const tag = typeof query?.tag === 'string' ? query.tag : '';
+
+  const filteredArticles = tag
+    ? articles.filter(article => article.tagList.includes(tag))
+    : [...articles];
 
   return (
     <>
-      {articles.map(
+      {filteredArticles.map(
         ({
           slug,
           author,

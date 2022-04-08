@@ -1,6 +1,23 @@
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { getTags } from '../api';
 import Articles from '../components/Articles';
 
 export default function Home() {
+  const { asPath, query } = useRouter();
+  const { tag } = query;
+  const [tags, setTags] = useState<string[]>([]);
+
+  useEffect(() => {
+    getTags().then(
+      ({ tags }) => {
+        setTags(tags);
+      },
+      error => console.error('error', error),
+    );
+  }, []);
+
   return (
     <div className="home-page">
       <div className="banner">
@@ -16,15 +33,25 @@ export default function Home() {
             <div className="feed-toggle">
               <ul className="nav nav-pills outline-active">
                 <li className="nav-item">
-                  <a className="nav-link disabled" href="">
-                    Your Feed
-                  </a>
+                  {/* TODO: Your Feed */}
+                  <Link href="#">
+                    <a className="nav-link disabled">Your Feed</a>
+                  </Link>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link active" href="">
-                    Global Feed
-                  </a>
+                  <Link href="/">
+                    <a className={`nav-link ${asPath === '/' ? 'active' : ''}`}>
+                      Global Feed
+                    </a>
+                  </Link>
                 </li>
+                {tag && (
+                  <li className="nav-item">
+                    <Link href={`?tag=${tag}`}>
+                      <a className="nav-link active"># {tag}</a>
+                    </Link>
+                  </li>
+                )}
               </ul>
             </div>
             <Articles />
@@ -32,32 +59,12 @@ export default function Home() {
           <div className="col-md-3">
             <div className="sidebar">
               <p>Popular Tags</p>
-
               <div className="tag-list">
-                <a href="" className="tag-pill tag-default">
-                  programming
-                </a>
-                <a href="" className="tag-pill tag-default">
-                  javascript
-                </a>
-                <a href="" className="tag-pill tag-default">
-                  emberjs
-                </a>
-                <a href="" className="tag-pill tag-default">
-                  angularjs
-                </a>
-                <a href="" className="tag-pill tag-default">
-                  react
-                </a>
-                <a href="" className="tag-pill tag-default">
-                  mean
-                </a>
-                <a href="" className="tag-pill tag-default">
-                  node
-                </a>
-                <a href="" className="tag-pill tag-default">
-                  rails
-                </a>
+                {tags.map(tag => (
+                  <Link href={`?tag=${tag}`} key={`tag-${tag}`}>
+                    <a className="tag-pill tag-default">{tag}</a>
+                  </Link>
+                ))}
               </div>
             </div>
           </div>

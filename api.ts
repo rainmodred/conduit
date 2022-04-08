@@ -56,4 +56,8 @@ function signIn(email: string, password: string): Promise<{ user: User }> {
   return fetcher('users/login', 'POST', data);
 }
 
-export { apiUrl, signUp, signIn };
+function getTags(): Promise<{ tags: string[] }> {
+  return fetcher('tags');
+}
+
+export { apiUrl, signUp, signIn, getTags };

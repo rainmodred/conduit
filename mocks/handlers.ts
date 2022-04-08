@@ -116,4 +116,13 @@ export const handlers = [
 
     return res(ctx.status(200), ctx.json(loggedUser));
   }),
+
+  rest.get(`${apiUrl}/tags`, (_req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json({
+        tags: ['welcome', 'implementations', 'codebaseShow', 'introduction'],
+      }),
+    );
+  }),
 ];
