@@ -56,15 +56,6 @@ const customRender = (
   });
 };
 
-function renderWithProviders(children: React.ReactNode, user: User | null) {
-  const setUser = jest.fn();
-  return customRender(
-    <AuthContext.Provider value={[user, setUser]}>
-      {children}
-    </AuthContext.Provider>,
-  );
-}
-
 function renderWithAuthProvider(
   children: React.ReactNode,
   user: User | null = null,
@@ -86,9 +77,4 @@ const mockUser: User = {
 };
 
 export * from '@testing-library/react';
-export {
-  customRender as render,
-  renderWithProviders,
-  renderWithAuthProvider,
-  mockUser,
-};
+export { customRender as render, renderWithAuthProvider, mockUser };
