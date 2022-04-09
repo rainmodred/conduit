@@ -1,5 +1,6 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '../types';
+import { getFromStorage, setToStorage } from '../utils';
 
 type AuthContextType = [User | null, (value: User | null) => void];
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -10,6 +11,19 @@ interface AuthProviderProps {
 
 function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const user = getFromStorage('auth');
+    if (user) {
+      setUser(user as User);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      setToStorage('auth', user);
+    }
+  }, [user]);
 
   return (
     <AuthContext.Provider value={[user, setUser]}>
