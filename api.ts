@@ -1,21 +1,29 @@
-import { User } from './types';
+import { Article, User } from './types';
 
 const apiUrl = 'https://api.realworld.io/api';
 
-async function fetcher<T>(
+async function fetcher(
   endpoint: string,
-  method: 'GET' | 'POST' = 'GET',
-  body?: T | null,
+  {
+    data,
+    token,
+    headers: customHeaders,
+    ...customConfig
+  }: { data?: unknown; token?: string } & RequestInit = {},
 ) {
-  try {
-    const response = await fetch(`${apiUrl}/${endpoint}`, {
-      method,
+  const config = {
+    method: data ? 'POST' : 'GET',
+    body: data ? JSON.stringify(data) : undefined,
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+      Authorization: token ? `Bearer ${token}` : undefined,
+      'Content-Type': data ? 'application/json' : undefined,
+      ...customHeaders,
       },
-      body: JSON.stringify(body),
-    });
+    ...customConfig,
+  };
+  try {
+    const response = await fetch(`${apiUrl}/${endpoint}`, config);
+    //TODO: logout on 401
     if (!response.ok) {
       const error = await response.json();
       console.log('error', error);
@@ -42,7 +50,7 @@ function signUp(
       password,
     },
   };
-  return fetcher('users', 'POST', data);
+  return fetcher('users', { data });
 }
 
 function signIn(email: string, password: string): Promise<{ user: User }> {
@@ -53,7 +61,7 @@ function signIn(email: string, password: string): Promise<{ user: User }> {
     },
   };
 
-  return fetcher('users/login', 'POST', data);
+  return fetcher('users/login', { data });
 }
 
 function getTags(): Promise<{ tags: string[] }> {
