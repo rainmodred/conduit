@@ -23,7 +23,12 @@ async function fetcher(
   };
   try {
     const response = await fetch(`${apiUrl}/${endpoint}`, config);
-    //TODO: logout on 401
+
+    if (response.status === 401) {
+      window.localStorage.removeItem('auth');
+      window.location = '/';
+    }
+
     if (!response.ok) {
       const error = await response.json();
       console.log('error', error);
