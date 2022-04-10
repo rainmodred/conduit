@@ -77,6 +77,34 @@ export const handlers = [
     );
   }),
 
+  rest.get(`${apiUrl}/articles/feed`, (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json({
+        articles: [
+          {
+            slug: 'feed article',
+            title: 'feed article',
+            description: 'test',
+            body: 'test test',
+            tagList: ['test'],
+            createdAt: '2021-11-24T12:11:08.212Z',
+            updatedAt: '2021-11-24T12:11:08.212Z',
+            favorited: false,
+            favoritesCount: 1,
+            author: {
+              username: 'test',
+              bio: null,
+              image: 'https://api.realworld.io/images/demo-avatar.png',
+              following: false,
+            },
+          },
+        ],
+        articlesCount: 1,
+      }),
+    );
+  }),
+
   rest.post(`${apiUrl}/users`, (req, res, ctx) => {
     const { username, email } = req.body?.user;
 
@@ -103,6 +131,7 @@ export const handlers = [
 
   rest.post(`${apiUrl}/users/login`, (req, res, ctx) => {
     const { email, password } = req.body?.user;
+
     if (email === 'error@example.com' || password === 'error') {
       return res(
         ctx.status(403),

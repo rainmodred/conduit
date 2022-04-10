@@ -21,7 +21,7 @@ const protectedRoutes: Route[] = [
 
 export default function Header(): JSX.Element {
   const { pathname } = useRouter();
-  const [user] = useAuth();
+  const { user } = useAuth();
 
   function renderRoutes() {
     const profilePath = `/${user?.username}`;

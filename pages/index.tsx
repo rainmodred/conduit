@@ -1,13 +1,18 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { getTags } from '../api';
+import { getArticles, getFeed, getTags } from '../api';
 import Articles from '../components/Articles';
+import { useAuth } from '../context/AuthContext';
+import { Article } from '../types';
 
 export default function Home() {
+  const { user } = useAuth();
   const { asPath, query } = useRouter();
   const { tag } = query;
   const [tags, setTags] = useState<string[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [isArticlesLoading, setIsArticlesLoading] = useState(true);
 
   useEffect(() => {
     getTags().then(
@@ -16,7 +21,31 @@ export default function Home() {
       },
       error => console.error('error', error),
     );
-  }, []);
+
+    if (user) {
+      getFeed(user.token).then(
+        ({ articles }) => {
+          setArticles(articles);
+          setIsArticlesLoading(false);
+        },
+        error => {
+          console.error('error', error);
+          setIsArticlesLoading(false);
+        },
+      );
+    } else {
+      getArticles().then(
+        ({ articles }) => {
+          setArticles(articles);
+          setIsArticlesLoading(false);
+        },
+        error => {
+          console.error('error', error);
+          setIsArticlesLoading(false);
+        },
+      );
+    }
+  }, [user]);
 
   return (
     <div className="home-page">
@@ -32,12 +61,19 @@ export default function Home() {
           <div className="col-md-9">
             <div className="feed-toggle">
               <ul className="nav nav-pills outline-active">
-                <li className="nav-item">
-                  {/* TODO: Your Feed */}
-                  <Link href="#">
-                    <a className="nav-link disabled">Your Feed</a>
-                  </Link>
-                </li>
+                {user && (
+                  <li className="nav-item">
+                    <Link href={`?feed=${user.username}`}>
+                      <a
+                        className={`nav-link ${
+                          asPath === `/?feed=${user.username}` ? 'active' : ''
+                        } `}
+                      >
+                        Your Feed
+                      </a>
+                    </Link>
+                  </li>
+                )}
                 <li className="nav-item">
                   <Link href="/">
                     <a className={`nav-link ${asPath === '/' ? 'active' : ''}`}>
@@ -54,7 +90,11 @@ export default function Home() {
                 )}
               </ul>
             </div>
-            <Articles />
+            {isArticlesLoading ? (
+              <p>Loading...</p>
+            ) : (
+              <Articles articles={articles} />
+            )}
           </div>
           <div className="col-md-3">
             <div className="sidebar">

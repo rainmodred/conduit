@@ -1,10 +1,18 @@
-import { render, screen } from '../../test-utils';
+import {
+  mockUser,
+  render,
+  renderWithAuthProvider,
+  screen,
+} from '../../test-utils';
 import Home from '../../pages/index';
 import { waitForElementToBeRemoved } from '@testing-library/react';
+import { rest } from 'msw';
+import { apiUrl } from '../../api';
+import { server } from '../../mocks/server';
 
 describe('Home page', () => {
   it('should render', async () => {
-    render(<Home />);
+    render(renderWithAuthProvider(<Home />));
 
     expect(
       screen.getByRole('heading', {
@@ -31,8 +39,28 @@ describe('Home page', () => {
     ).toBeInTheDocument();
   });
 
+  it('should show error articles count = 0', async () => {
+    server.use(
+      rest.get(`${apiUrl}/articles`, (_req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.json({
+            articles: [],
+            articlesCount: 0,
+          }),
+        );
+      }),
+    );
+
+    render(renderWithAuthProvider(<Home />));
+    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+    expect(
+      screen.getByText(/no articles are here\.\.\. yet\./i),
+    ).toBeInTheDocument();
+  });
+
   it('should filter articles by tag', async () => {
-    render(<Home />, {
+    render(renderWithAuthProvider(<Home />), {
       router: { query: { tag: 'welcome' } },
     });
 
@@ -53,5 +81,46 @@ describe('Home page', () => {
         name: /explore implementations/i,
       }),
     ).not.toBeInTheDocument();
+  });
+
+  it('should show feed', async () => {
+    render(renderWithAuthProvider(<Home />, mockUser));
+
+    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+
+    expect(
+      screen.getByRole('link', {
+        name: /your feed/i,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', {
+        name: /feed article/i,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', {
+        name: /create a new implementation/i,
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it.skip('should logout on 401', async () => {
+    server.use(
+      rest.get(`${apiUrl}/articles/feed`, (_req, res, ctx) => {
+        return res(
+          ctx.status(401),
+          ctx.json({
+            status: 'error',
+            message: 'missing authorization credentials',
+          }),
+        );
+      }),
+    );
+
+    render(renderWithAuthProvider(<Home />, mockUser));
+    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+
+    expect(screen.getByRole('link', { name: /sign in/i })).toBeInTheDocument();
   });
 });

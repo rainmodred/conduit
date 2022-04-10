@@ -14,11 +14,11 @@ async function fetcher(
   const config = {
     method: data ? 'POST' : 'GET',
     body: data ? JSON.stringify(data) : undefined,
-      headers: {
+    headers: {
       Authorization: token ? `Bearer ${token}` : undefined,
       'Content-Type': data ? 'application/json' : undefined,
       ...customHeaders,
-      },
+    },
     ...customConfig,
   };
   try {
@@ -73,4 +73,17 @@ function getTags(): Promise<{ tags: string[] }> {
   return fetcher('tags');
 }
 
-export { apiUrl, signUp, signIn, getTags };
+function getFeed(
+  token: string,
+): Promise<{ articles: Article[]; articlesCouint: number }> {
+  return fetcher('articles/feed', { token });
+}
+
+function getArticles(): Promise<{
+  articles: Article[];
+  articlesCouint: number;
+}> {
+  return fetcher('articles');
+}
+
+export { apiUrl, signUp, signIn, getTags, getFeed, getArticles };
