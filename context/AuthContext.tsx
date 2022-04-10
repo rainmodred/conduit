@@ -2,7 +2,11 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '../types';
 import { getFromStorage, setToStorage } from '../utils';
 
-type AuthContextType = [User | null, (value: User | null) => void];
+interface AuthContextType {
+  user: User | null;
+  setUser: (value: User | null) => void;
+  logout: () => void;
+}
 const AuthContext = createContext<AuthContextType | null>(null);
 
 interface AuthProviderProps {
@@ -25,8 +29,13 @@ function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [user]);
 
+  function logout() {
+    setUser(null);
+    window.localStorage.removeItem('auth');
+  }
+
   return (
-    <AuthContext.Provider value={[user, setUser]}>
+    <AuthContext.Provider value={{ user, setUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

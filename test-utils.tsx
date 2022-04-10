@@ -61,8 +61,9 @@ function renderWithAuthProvider(
   user: User | null = null,
 ) {
   const setUser = jest.fn();
+  const logout = jest.fn();
   return (
-    <AuthContext.Provider value={[user, setUser]}>
+    <AuthContext.Provider value={{ user, setUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -20,7 +20,7 @@ const schema = z.object({
 });
 
 export default function Register() {
-  const [user, setUser] = useAuth();
+  const { user, setUser } = useAuth();
   const [apiErrors, setApiErrors] = useState<ApiErrorsType>({});
   const [IsFormDisabled, setIsFormDisabled] = useState(false);
   const {
