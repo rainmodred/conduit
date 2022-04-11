@@ -5,7 +5,7 @@ import {
   screen,
 } from '../../test-utils';
 import Home from '../../pages/index';
-import { waitForElementToBeRemoved } from '@testing-library/react';
+import { waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import { rest } from 'msw';
 import { apiUrl } from '../../api';
 import { server } from '../../mocks/server';
@@ -53,7 +53,9 @@ describe('Home page', () => {
     );
 
     render(renderWithAuthProvider(<Home />));
-    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(/loading articles/i),
+    );
     expect(
       screen.getByText(/no articles are here\.\.\. yet\./i),
     ).toBeInTheDocument();
@@ -64,7 +66,9 @@ describe('Home page', () => {
       router: { query: { tag: 'welcome' } },
     });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(/loading articles/i),
+    );
 
     expect(
       screen.getByRole('heading', {
@@ -83,10 +87,21 @@ describe('Home page', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('should show feed', async () => {
-    render(renderWithAuthProvider(<Home />, mockUser));
+  it('should redirect to feed if user logged in', () => {
+    const push = jest.fn();
+    render(renderWithAuthProvider(<Home />, mockUser), { router: { push } });
 
-    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+    expect(push).toBeCalledWith({ query: { feed: 'user' } });
+  });
+
+  it('should show feed', async () => {
+    render(renderWithAuthProvider(<Home />, mockUser), {
+      router: { asPath: `/?feed=${mockUser.username}` },
+    });
+
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(/loading articles/i),
+    );
 
     expect(
       screen.getByRole('link', {
@@ -119,7 +134,9 @@ describe('Home page', () => {
     );
 
     render(renderWithAuthProvider(<Home />, mockUser));
-    await waitForElementToBeRemoved(() => screen.getByText(/loading/i));
+    await waitForElementToBeRemoved(() =>
+      screen.getByText(/loading articles/i),
+    );
 
     expect(screen.getByRole('link', { name: /sign in/i })).toBeInTheDocument();
   });

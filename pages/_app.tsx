@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { AuthProvider } from '../context/AuthContext';
 import Layout from '../components/Layout';
 import '../styles/globals.css';
@@ -12,15 +13,25 @@ if (process.env.NEXT_PUBLIC_API_MOCKING === 'enabled') {
   }
 }
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 interface AllProvidersProps {
   children: React.ReactNode;
 }
 
 function AllProviders({ children }: AllProvidersProps): JSX.Element {
   return (
-    <AuthProvider>
-      <Layout>{children}</Layout>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Layout>{children}</Layout>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 

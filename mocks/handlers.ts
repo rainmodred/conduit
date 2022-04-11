@@ -1,6 +1,7 @@
 import { rest } from 'msw';
 import { apiUrl } from '../api';
 
+const defaultDefay = 200;
 const loggedUser = {
   user: {
     email: 'conduitTest@example.com',
@@ -16,6 +17,7 @@ export const handlers = [
   rest.get(`${apiUrl}/articles`, (req, res, ctx) => {
     return res(
       ctx.status(200),
+      ctx.delay(defaultDefay),
       ctx.json({
         articles: [
           {
@@ -80,6 +82,7 @@ export const handlers = [
   rest.get(`${apiUrl}/articles/feed`, (req, res, ctx) => {
     return res(
       ctx.status(200),
+      ctx.delay(defaultDefay),
       ctx.json({
         articles: [
           {

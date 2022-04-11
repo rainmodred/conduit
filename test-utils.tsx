@@ -5,6 +5,7 @@ import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { NextRouter } from 'next/router';
 import { User } from './types';
 import { AuthContext } from './context/AuthContext';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 const mockRouter: NextRouter = {
   basePath: '',
@@ -31,6 +32,18 @@ const mockRouter: NextRouter = {
   isPreview: false,
 };
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
+
+afterEach(() => {
+  queryClient.clear();
+});
+
 interface AllTheProvidersProps {
   children: React.ReactNode;
   router?: Partial<NextRouter>;
@@ -38,9 +51,11 @@ interface AllTheProvidersProps {
 
 const AllTheProviders = ({ children, router }: AllTheProvidersProps) => {
   return (
-    <RouterContext.Provider value={{ ...mockRouter, ...router }}>
-      {children}
-    </RouterContext.Provider>
+    <QueryClientProvider client={queryClient}>
+      <RouterContext.Provider value={{ ...mockRouter, ...router }}>
+        {children}
+      </RouterContext.Provider>
+    </QueryClientProvider>
   );
 };
 

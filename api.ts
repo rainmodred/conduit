@@ -1,4 +1,4 @@
-import { Article, User } from './types';
+import { Article, ArticlesFromAPi, User } from './types';
 
 const apiUrl = 'https://api.realworld.io/api';
 
@@ -73,16 +73,11 @@ function getTags(): Promise<{ tags: string[] }> {
   return fetcher('tags');
 }
 
-function getFeed(
-  token: string,
-): Promise<{ articles: Article[]; articlesCouint: number }> {
+function getFeed(token: string): Promise<ArticlesFromAPi> {
   return fetcher('articles/feed', { token });
 }
 
-function getArticles(): Promise<{
-  articles: Article[];
-  articlesCouint: number;
-}> {
+function getArticles(): Promise<ArticlesFromAPi> {
   return fetcher('articles');
 }
 

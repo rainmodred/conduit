@@ -10,10 +10,15 @@ interface Article {
   favoritesCount: number;
   author: {
     username: string;
-    bio: any;
+    bio: string | null;
     image: string;
     following: boolean;
   };
+}
+
+interface ArticlesFromAPi {
+  articles: Article[];
+  articlesCouint: number;
 }
 
 interface User {
@@ -26,4 +31,4 @@ interface User {
 
 type ApiErrorsType = Record<string, string>;
 
-export type { Article, User, ApiErrorsType };
+export type { Article, User, ApiErrorsType, ArticlesFromAPi };
