@@ -5,7 +5,7 @@ import {
   screen,
 } from '../../test-utils';
 import Home from '../../pages/index';
-import { waitFor, waitForElementToBeRemoved } from '@testing-library/react';
+import { waitForElementToBeRemoved } from '@testing-library/react';
 import { rest } from 'msw';
 import { apiUrl } from '../../api';
 import { server } from '../../mocks/server';
@@ -96,7 +96,9 @@ describe('Home page', () => {
 
   it('should show feed', async () => {
     render(renderWithAuthProvider(<Home />, mockUser), {
-      router: { asPath: `/?feed=${mockUser.username}` },
+      router: {
+        query: { feed: mockUser.username },
+      },
     });
 
     await waitForElementToBeRemoved(() =>

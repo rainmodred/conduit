@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { getArticles, getFeed } from '../api';
 import Articles from '../components/Articles';
 import FeedNavigation from '../components/FeedNavigation';
@@ -7,31 +7,29 @@ import Tags from '../components/Tags';
 import { useAuth } from '../context/AuthContext';
 import useArticles from '../hooks/useArticles';
 import useFeed from '../hooks/useFeed';
-import { Article } from '../types';
 
 export default function Home() {
   const { user } = useAuth();
-  const { asPath, isReady, push } = useRouter();
+  const { isReady, push, query } = useRouter();
 
   useEffect(() => {
-    if (user) {
-      push({
-        query: { feed: user.username },
-      });
+    if (isReady && user != undefined) {
+      if (user) {
+        push({
+          query: { feed: user.username },
+        });
+      } else if (!user) {
+        push('/');
+      }
     }
 
-    if (!user && isReady) {
-      push('/');
-    }
     // infinite rerender with push
-  }, [user]);
+  }, [user, isReady]);
 
   const {
     data: articlesData,
     error: articlesError,
     isLoading: isArticlesLoading,
-    isSuccess: isArticlesSuccess,
-    status,
   } = useArticles(getArticles, {
     enabled: isReady,
   });
@@ -40,43 +38,33 @@ export default function Home() {
     data: feedData,
     error: feedError,
     isLoading: isFeedLoading,
-    isSuccess: isFeedSuccess,
   } = useFeed(() => getFeed(user?.token as string), {
     enabled: Boolean(user) && isReady,
   });
 
-  const ifSomethingLoading = isArticlesLoading || isFeedLoading;
-  console.log('STATUS', status, articlesData);
-
-  let articles: Article[] = [];
-  let feed: Article[] = [];
-
   function renderArticles() {
-    if (ifSomethingLoading) {
+    if (!isReady) {
       return <div className="article-preview">Loading articles...</div>;
     }
 
-    if (articlesError) {
-      return <p>Error {articlesError}</p>;
+    if (articlesError || feedError) {
+      //TODO
+      return <p>Error</p>;
     }
 
-    if (feedError) {
-      return <p>Error {feedError}</p>;
+    if (query?.feed && query.feed === user?.username) {
+      if (isFeedLoading) {
+        return <div className="article-preview">Loading articles...</div>;
+      }
+
+      return <Articles articles={feedData?.articles ?? []} />;
     }
 
-    if (isArticlesSuccess) {
-      articles = articlesData?.articles;
+    if (isArticlesLoading) {
+      return <div className="article-preview">Loading articles...</div>;
     }
 
-    if (isFeedSuccess) {
-      feed = feedData?.articles;
-    }
-
-    return asPath.startsWith('/?feed') ? (
-      <Articles articles={feed} />
-    ) : (
-      <Articles articles={articles} />
-    );
+    return <Articles articles={articlesData?.articles ?? []} />;
   }
 
   return (
