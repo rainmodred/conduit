@@ -15,7 +15,7 @@ export default function Tags() {
           <p>Error {error}</p>
         ) : (
           tags.map(tag => (
-            <Link href={`?tag=${tag}`} key={`tag-${tag}`}>
+            <Link href={`/tag/${tag}`} key={`tag-${tag}`}>
               <a className="tag-pill tag-default">{tag}</a>
             </Link>
           ))

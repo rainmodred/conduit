@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 import { AuthProvider } from '../context/AuthContext';
 import Layout from '../components/Layout';
 import '../styles/globals.css';
@@ -17,6 +18,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
+      retry: 1,
     },
   },
 });
@@ -31,6 +33,7 @@ function AllProviders({ children }: AllProvidersProps): JSX.Element {
       <AuthProvider>
         <Layout>{children}</Layout>
       </AuthProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }

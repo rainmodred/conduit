@@ -1,9 +1,10 @@
 import { useQuery, UseQueryOptions } from 'react-query';
+import { getFeed } from '../api';
 import { ArticlesFromAPi } from '../types';
 
 export default function useFeed(
-  fetcher: () => Promise<ArticlesFromAPi>,
+  token: string,
   options?: UseQueryOptions<ArticlesFromAPi>,
 ) {
-  return useQuery<ArticlesFromAPi>('feed', fetcher, options);
+  return useQuery<ArticlesFromAPi>('feed', () => getFeed(token), options);
 }

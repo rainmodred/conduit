@@ -13,23 +13,30 @@ function formatDate(date: string) {
 }
 
 interface ArticlesPoprs {
-  articles: Article[];
+  articles: Article[] | undefined;
+  isLoading: boolean;
+  isError: boolean;
 }
 
-export default function Articles({ articles }: ArticlesPoprs): JSX.Element {
-  const { query } = useRouter();
+export default function Articles({
+  articles,
+  isLoading,
+  isError,
+}: ArticlesPoprs): JSX.Element {
+  if (isLoading) {
+    return <div className="article-preview">Loading articles...</div>;
+  }
 
-  const tag = typeof query?.tag === 'string' ? query.tag : '';
-  const filteredArticles = tag
-    ? articles.filter(article => article.tagList.includes(tag))
-    : [...articles];
+  if (isError) {
+    return <div className="article-preview">TODO...</div>;
+  }
 
   return (
     <>
-      {filteredArticles.length === 0 ? (
+      {articles?.length === 0 ? (
         <div className="article-preview">No articles are here... yet.</div>
       ) : (
-        filteredArticles.map(
+        articles?.map(
           ({
             slug,
             author,

@@ -11,21 +11,25 @@ async function fetcher(
     ...customConfig
   }: { data?: unknown; token?: string } & RequestInit = {},
 ) {
-  const config = {
+  const headers = {};
+
+  const config: RequestInit = {
     method: data ? 'POST' : 'GET',
     body: data ? JSON.stringify(data) : undefined,
     headers: {
-      Authorization: token ? `Bearer ${token}` : undefined,
-      'Content-Type': data ? 'application/json' : undefined,
+      Authorization: token ? `Bearer ${token}` : '',
+      'Content-Type': 'application/json',
       ...customHeaders,
     },
     ...customConfig,
   };
+
   try {
     const response = await fetch(`${apiUrl}/${endpoint}`, config);
 
     if (response.status === 401) {
       window.localStorage.removeItem('auth');
+      // TODO: logout
       window.location = '/';
     }
 
@@ -73,12 +77,44 @@ function getTags(): Promise<{ tags: string[] }> {
   return fetcher('tags');
 }
 
-function getFeed(token: string): Promise<ArticlesFromAPi> {
-  return fetcher('articles/feed', { token });
+function getFeed(
+  token: string,
+  page = 1,
+  params?: Record<string, string>,
+): Promise<ArticlesFromAPi> {
+  const limit = '10';
+
+  let offset = '0';
+  if (page > 1) {
+    offset = (Number(limit) * page - 10).toString();
+  }
+
+  const searchParams = new URLSearchParams({
+    ...params,
+    limit,
+    offset,
+  }).toString();
+
+  return fetcher(`articles/feed?${searchParams}`, { token });
 }
 
-function getArticles(): Promise<ArticlesFromAPi> {
-  return fetcher('articles');
+function getArticles(
+  page = 1,
+  params?: Record<string, string>,
+): Promise<ArticlesFromAPi> {
+  const limit = '10';
+
+  let offset = '0';
+  if (page > 1) {
+    offset = (Number(limit) * page - 10).toString();
+  }
+
+  const searchParams = new URLSearchParams({
+    ...params,
+    limit,
+    offset,
+  }).toString();
+  return fetcher(`articles?${searchParams}`);
 }
 
 export { apiUrl, signUp, signIn, getTags, getFeed, getArticles };

@@ -1,38 +1,32 @@
+import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
 import { useQuery } from 'react-query';
-import { getFeed } from '../api';
+import { getArticles } from '../api';
 import Articles from '../components/Articles';
 import FeedNavigation from '../components/FeedNavigation';
 import Pagination from '../components/Pagination/Pagination';
 import Tags from '../components/Tags';
 import { itemsPerPage } from '../constants';
-import { useAuth } from '../context/AuthContext';
+import { ArticlesFromAPi } from '../types';
 
-export default function Home() {
-  const { user } = useAuth();
-  const { isReady, push, query } = useRouter();
+interface AllProps {
+  articlesData: ArticlesFromAPi;
+}
+
+export default function All({ articlesData }: AllProps): JSX.Element {
+  const { isReady, query } = useRouter();
 
   const page = Number(query?.page) || 1;
-
   const { data, isLoading, isIdle, isError, isSuccess } = useQuery(
-    ['articles', 'feed', page],
-    () => getFeed(user?.token as string, page),
-    { enabled: isReady && Boolean(user) },
+    ['articles', 'all', page],
+    () => getArticles(page),
+    { enabled: isReady, initialData: articlesData },
   );
 
   let totalPages = 0;
   if (isSuccess) {
     totalPages = Math.ceil(data?.articlesCount / itemsPerPage);
   }
-
-  useEffect(() => {
-    if (isReady && user === null) {
-      push({ pathname: '/all' });
-    }
-
-    // infinite rerender with push
-  }, [user, isReady]);
 
   return (
     <div className="home-page">
@@ -54,6 +48,7 @@ export default function Home() {
             />
             <Pagination totalPages={totalPages} />
           </div>
+
           <div className="col-md-3">
             <Tags />
           </div>
@@ -62,3 +57,11 @@ export default function Home() {
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps<
+  AllProps
+> = async context => {
+  const page = parseInt(context.query.page as string) || 1;
+  const articlesData = await getArticles(page);
+  return { props: { articlesData } };
+};

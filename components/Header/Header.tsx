@@ -1,8 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useAuth } from '../context/AuthContext';
-import NavLink from './NavLink';
+import { useAuth } from '../../context/AuthContext';
+import NavLink from '../NavLink';
 
 type Route = {
   title: string;

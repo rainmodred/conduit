@@ -1,4 +1,4 @@
-import Header from '../../components/Header';
+import Header from './Header';
 import {
   render,
   mockUser,
@@ -6,7 +6,7 @@ import {
   screen,
 } from '../../test-utils';
 
-describe('Header page', () => {
+describe('Header', () => {
   it('should render', () => {
     render(renderWithAuthProvider(<Header />));
 
