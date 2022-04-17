@@ -12,18 +12,20 @@ export default function Pagination({
 
   return (
     <nav>
-      <ul className="pagination">
-        {range.map(page => (
-          <li
-            key={`page-${page}`}
-            className={`page-item ${activePage === page ? 'active' : ''}`}
-          >
-            <Link href={`?page=${page}`}>
-              <a className="page-link">{page}</a>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {totalPages > 1 && (
+        <ul className="pagination">
+          {range.map(page => (
+            <li
+              key={`page-${page}`}
+              className={`page-item ${activePage === page ? 'active' : ''}`}
+            >
+              <Link href={`?page=${page}`}>
+                <a className="page-link">{page}</a>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </nav>
   );
 }
