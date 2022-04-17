@@ -19,7 +19,7 @@ export default function Tag({ articlesData }: TagProps): JSX.Element {
   const page = Number(query?.page) || 1;
   const { data, isLoading, isIdle, isError, isSuccess } = useQuery(
     ['articles', `${query?.tag}`, page],
-    () => getArticles(page, { tag: query?.tag as string }),
+    () => getArticles(page, null, { tag: query?.tag as string }),
     { enabled: isReady && Boolean(query?.tag), initialData: articlesData },
   );
 

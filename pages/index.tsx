@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useQuery } from 'react-query';
-import { getFeed } from '../api';
+import { getArticles, getFeed } from '../api';
 import Articles from '../components/Articles';
 import FeedNavigation from '../components/FeedNavigation';
 import Pagination from '../components/Pagination/Pagination';
@@ -17,7 +17,7 @@ export default function Home() {
 
   const { data, isLoading, isIdle, isError, isSuccess } = useQuery(
     ['articles', 'feed', page],
-    () => getFeed(user?.token as string, page),
+    () => getArticles(page, user?.token as string),
     { enabled: isReady && Boolean(user) },
   );
 

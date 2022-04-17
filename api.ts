@@ -77,29 +77,9 @@ function getTags(): Promise<{ tags: string[] }> {
   return fetcher('tags');
 }
 
-function getFeed(
-  token: string,
-  page = 1,
-  params?: Record<string, string>,
-): Promise<ArticlesFromAPi> {
-  const limit = '10';
-
-  let offset = '0';
-  if (page > 1) {
-    offset = (Number(limit) * page - 10).toString();
-  }
-
-  const searchParams = new URLSearchParams({
-    ...params,
-    limit,
-    offset,
-  }).toString();
-
-  return fetcher(`articles/feed?${searchParams}`, { token });
-}
-
 function getArticles(
   page = 1,
+  token?: string | null,
   params?: Record<string, string>,
 ): Promise<ArticlesFromAPi> {
   const limit = '10';
@@ -114,7 +94,12 @@ function getArticles(
     limit,
     offset,
   }).toString();
+
+  if (token) {
+    return fetcher(`articles/feed?${searchParams}`, { token });
+  }
+
   return fetcher(`articles?${searchParams}`);
 }
 
-export { apiUrl, signUp, signIn, getTags, getFeed, getArticles };
+export { apiUrl, signUp, signIn, getTags, getArticles };
