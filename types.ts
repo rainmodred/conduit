@@ -18,7 +18,7 @@ interface Article {
 
 interface ArticlesFromAPi {
   articles: Article[];
-  articlesCouint: number;
+  articlesCount: number;
 }
 
 interface User {
