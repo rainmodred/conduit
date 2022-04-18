@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Article } from '../types';
+import FavoriteArticleButton from './Buttons/FavoriteButton/FavoriteButton';
 
 type ArticlePreviewProps = Omit<Article, 'updatedAt' | 'body'>;
 
@@ -15,6 +16,10 @@ export default function ArticlePreview({
   tagList,
 }: ArticlePreviewProps): JSX.Element {
   const { image, username } = author;
+
+  function handleFavoriteClick() {
+    // TODO
+  }
 
   return (
     <div className="article-preview">
@@ -33,13 +38,20 @@ export default function ArticlePreview({
           </a>
           <span className="date">{createdAt}</span>
         </div>
-        <button
+        <FavoriteArticleButton
+          favorited={favorited}
+          size="sm"
+          onClick={handleFavoriteClick}
+        >
+          {favoritesCount}
+        </FavoriteArticleButton>
+        {/* <button
           className={`btn ${
             favorited ? 'btn-primary' : 'btn-outline-primary'
           }  btn-sm pull-xs-right`}
         >
           <i className="ion-heart"></i> {favoritesCount}
-        </button>
+        </button> */}
       </div>
 
       <Link href={`/article/${slug}`}>
