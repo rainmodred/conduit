@@ -1,4 +1,4 @@
-interface FavotriteArticleButtonProps {
+interface FavoriteArticleButtonProps {
   children: React.ReactNode;
   favorited: boolean;
   size: 'sm' | 'lg';
@@ -15,19 +15,18 @@ function getButtonText(favorited: boolean) {
   return 'Favorite' + str;
 }
 
-export default function FavotriteArticleButton({
+export default function FavoriteArticleButton({
   children,
   favorited,
   size = 'sm',
   onClick,
-}: FavotriteArticleButtonProps): JSX.Element {
+}: FavoriteArticleButtonProps): JSX.Element {
+  const classes = `btn btn-sm ${
+    favorited ? 'btn-primary' : 'btn-outline-primary'
+  } ${size === 'sm' && 'pull-xs-right'}`;
+
   return (
-    <button
-      onClick={onClick}
-      className={`btn btn-sm ${
-        favorited ? 'btn-primary' : 'btn-outline-primary'
-      }`}
-    >
+    <button onClick={onClick} className={`${classes}`}>
       <i className="ion-heart"></i>&nbsp;
       {size === 'lg' && getButtonText(favorited)}
       <span className="counter">
