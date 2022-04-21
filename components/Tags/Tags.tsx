@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import useTags from '../hooks/useTags';
+import useTags from '../../hooks/useTags';
 
 export default function Tags() {
   const { data, isLoading, error } = useTags();
@@ -12,7 +12,7 @@ export default function Tags() {
         {isLoading ? (
           <p>Loading tags...</p>
         ) : error ? (
-          <p>Error {error}</p>
+          <p>Something went wrong</p>
         ) : (
           tags.map(tag => (
             <Link href={`/tag/${tag}`} key={`tag-${tag}`}>

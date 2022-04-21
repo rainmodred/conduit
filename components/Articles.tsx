@@ -27,7 +27,7 @@ export default function Articles({
   }
 
   if (isError) {
-    return <div className="article-preview">TODO...</div>;
+    return <div className="article-preview">Something went wrong</div>;
   }
 
   return (
