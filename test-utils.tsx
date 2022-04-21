@@ -84,13 +84,5 @@ function renderWithAuthProvider(
   );
 }
 
-const mockUser: User = {
-  username: 'user',
-  bio: 'test',
-  email: 'email@example.com',
-  image: 'https://test.com/image.jpg',
-  token: '12345',
-};
-
 export * from '@testing-library/react';
-export { customRender as render, renderWithAuthProvider, mockUser };
+export { customRender as render, renderWithAuthProvider };

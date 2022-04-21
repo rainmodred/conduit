@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useQuery } from 'react-query';
-import { getArticles, getFeed } from '../api';
+import { getArticles } from '../api';
 import Articles from '../components/Articles';
 import FeedNavigation from '../components/FeedNavigation';
 import Pagination from '../components/Pagination/Pagination';
@@ -27,7 +27,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if (isReady && user === null) {
+    if (isReady && user === undefined) {
       push({ pathname: '/all' });
     }
 

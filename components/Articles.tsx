@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import ArticlePreview from './ArticlePreview';
 import { Article } from '../types';
 

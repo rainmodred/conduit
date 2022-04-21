@@ -1,3 +1,5 @@
+import { User } from '../types';
+
 export const mockArticles = {
   articles: [
     {
@@ -190,4 +192,13 @@ export const mockArticles = {
     },
   ],
   articlesCount: 11,
+};
+
+export const mockUser: User = {
+  email: 'conduitTest@example.com',
+  username: 'conduitTest',
+  bio: null,
+  image: 'https://api.realworld.io/images/smiley-cyrus.jpeg',
+  token:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNvbmR1aXRUZXN0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJjb25kdWl0VGVzdCIsImlhdCI6MTY0ODkwNzM1MywiZXhwIjoxNjU0MDkxMzUzfQ.tZxbSHR8BJg6WGXOy3keP8DrGCZByiwdXzdDZzj4--U',
 };

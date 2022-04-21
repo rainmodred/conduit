@@ -1,18 +1,12 @@
 import { rest } from 'msw';
 import { apiUrl } from '../api';
+import { mockUser } from './mock';
 import { Article } from '../types';
 import { mockArticles } from './mock';
 
 const defaultDefay = 200;
-const loggedUser = {
-  user: {
-    email: 'conduitTest@example.com',
-    username: 'conduitTest',
-    bio: null,
-    image: 'https://api.realworld.io/images/smiley-cyrus.jpeg',
-    token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNvbmR1aXRUZXN0QGV4YW1wbGUuY29tIiwidXNlcm5hbWUiOiJjb25kdWl0VGVzdCIsImlhdCI6MTY0ODkwNzM1MywiZXhwIjoxNjU0MDkxMzUzfQ.tZxbSHR8BJg6WGXOy3keP8DrGCZByiwdXzdDZzj4--U',
-  },
+const userData = {
+  user: mockUser,
 };
 
 export const handlers = [
@@ -36,6 +30,11 @@ export const handlers = [
   }),
 
   rest.get(`${apiUrl}/articles/feed`, (req, res, ctx) => {
+    const token = req.headers.get('Authorization')?.slice(7);
+    if (!token || token !== userData.user.token) {
+      return res(ctx.delay(defaultDefay), ctx.status(401));
+    }
+
     return res(
       ctx.status(200),
       ctx.delay(defaultDefay),
@@ -85,7 +84,7 @@ export const handlers = [
       );
     }
 
-    return res(ctx.status(200), ctx.json(loggedUser));
+    return res(ctx.status(200), ctx.json(userData));
   }),
 
   rest.post(`${apiUrl}/users/login`, (req, res, ctx) => {
@@ -102,7 +101,7 @@ export const handlers = [
       );
     }
 
-    return res(ctx.status(200), ctx.json(loggedUser));
+    return res(ctx.status(200), ctx.json(userData));
   }),
 
   rest.get(`${apiUrl}/tags`, (_req, res, ctx) => {

@@ -1,12 +1,11 @@
 import userEvent from '@testing-library/user-event';
 import {
-  mockUser,
   render,
   renderWithAuthProvider,
   screen,
   waitFor,
 } from '../../test-utils';
-
+import { mockUser } from '../../mocks/mock';
 import Login from '../../pages/login';
 
 describe('Login page', () => {
