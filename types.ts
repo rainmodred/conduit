@@ -36,6 +36,20 @@ interface Profile {
   following: boolean;
 }
 
+interface ArticleToCreate {
+  title: string;
+  description: string;
+  body: string;
+  taglist: string[];
+}
+
 type ApiErrorsType = Record<string, string>;
 
-export type { Article, User, ApiErrorsType, ArticlesFromAPi, Profile };
+export type {
+  Article,
+  User,
+  ApiErrorsType,
+  ArticlesFromAPi,
+  Profile,
+  ArticleToCreate,
+};
