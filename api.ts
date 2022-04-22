@@ -71,6 +71,10 @@ function signIn(email: string, password: string): Promise<{ user: User }> {
   return fetcher('/users/login', { data });
 }
 
+function updateUser(user: User): Promise<{ user: User }> {
+  return fetcher('/user', { data: { user }, method: 'PUT' });
+}
+
 function getTags(): Promise<{ tags: string[] }> {
   return fetcher('/tags');
 }
@@ -100,4 +104,4 @@ function getArticles(
   return fetcher(`/articles?${searchParams}`);
 }
 
-export { apiUrl, signUp, signIn, getTags, getArticles };
+export { apiUrl, signUp, signIn, updateUser, getTags, getArticles };
