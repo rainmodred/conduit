@@ -1,4 +1,4 @@
-import { Article, ArticlesFromAPi, User } from './types';
+import { ArticlesFromAPi, User } from './types';
 
 const apiUrl = 'https://api.realworld.io/api';
 
@@ -11,8 +11,6 @@ async function fetcher(
     ...customConfig
   }: { data?: unknown; token?: string } & RequestInit = {},
 ) {
-  const headers = {};
-
   const config: RequestInit = {
     method: data ? 'POST' : 'GET',
     body: data ? JSON.stringify(data) : undefined,
@@ -25,7 +23,7 @@ async function fetcher(
   };
 
   try {
-    const response = await fetch(`${apiUrl}/${endpoint}`, config);
+    const response = await fetch(`${apiUrl}${endpoint}`, config);
 
     if (response.status === 401) {
       window.localStorage.removeItem('auth');
@@ -59,7 +57,7 @@ function signUp(
       password,
     },
   };
-  return fetcher('users', { data });
+  return fetcher('/users', { data });
 }
 
 function signIn(email: string, password: string): Promise<{ user: User }> {
@@ -70,11 +68,11 @@ function signIn(email: string, password: string): Promise<{ user: User }> {
     },
   };
 
-  return fetcher('users/login', { data });
+  return fetcher('/users/login', { data });
 }
 
 function getTags(): Promise<{ tags: string[] }> {
-  return fetcher('tags');
+  return fetcher('/tags');
 }
 
 function getArticles(
@@ -96,10 +94,10 @@ function getArticles(
   }).toString();
 
   if (token) {
-    return fetcher(`articles/feed?${searchParams}`, { token });
+    return fetcher(`/articles/feed?${searchParams}`, { token });
   }
 
-  return fetcher(`articles?${searchParams}`);
+  return fetcher(`/articles?${searchParams}`);
 }
 
 export { apiUrl, signUp, signIn, getTags, getArticles };
