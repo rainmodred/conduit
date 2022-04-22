@@ -1,3 +1,10 @@
+interface Author {
+  username: string;
+  bio: string | null;
+  image: string;
+  following: boolean;
+}
+
 interface Article {
   slug: string;
   title: string;
@@ -8,12 +15,7 @@ interface Article {
   updatedAt: string;
   favorited: boolean;
   favoritesCount: number;
-  author: {
-    username: string;
-    bio: string | null;
-    image: string;
-    following: boolean;
-  };
+  author: Author;
 }
 
 interface ArticlesFromAPi {
@@ -43,6 +45,14 @@ interface ArticleToCreate {
   taglist: string[];
 }
 
+interface Comment {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  body: string;
+  author: Author;
+}
+
 type ApiErrorsType = Record<string, string>;
 
 export type {
@@ -52,4 +62,5 @@ export type {
   ArticlesFromAPi,
   Profile,
   ArticleToCreate,
+  Comment,
 };

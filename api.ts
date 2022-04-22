@@ -149,6 +149,28 @@ function deleteArticle(slug: string, token: string): Promise<unknown> {
   return fetcher(`/articles/${slug}`, { method: 'DELETE', token });
 }
 
+function getComments(
+  slug: string,
+  token?: string,
+): Promise<{ comments: Comment[] }> {
+  return fetcher(`/articles/${slug}/comments`, { token });
+}
+
+function createComment(
+  slug: string,
+  comment: { body: string },
+  token: string,
+): Promise<{ comment: Comment }> {
+  return fetcher(`/articles/${slug}/comments`, { data: { comment }, token });
+}
+
+function deleteComment(slug: string, commentId: number, token: string) {
+  return fetcher(`/articles/${slug}/comments/${commentId}`, {
+    method: 'DELETE',
+    token,
+  });
+}
+
 export {
   apiUrl,
   signUp,
@@ -163,4 +185,7 @@ export {
   getArticle,
   updateArticle,
   deleteArticle,
+  getComments,
+  createComment,
+  deleteComment,
 };
