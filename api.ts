@@ -171,6 +171,17 @@ function deleteComment(slug: string, commentId: number, token: string) {
   });
 }
 
+function favoriteArticle(
+  slug: string,
+  token: string,
+): Promise<{ article: Article }> {
+  return fetcher(`/articles/${slug}/favorite`, { token });
+}
+
+function unfavoriteArticle(slug: string, token: string) {
+  return fetcher(`/articles/${slug}/favorite`, { method: 'DELETE', token });
+}
+
 export {
   apiUrl,
   signUp,
@@ -188,4 +199,6 @@ export {
   getComments,
   createComment,
   deleteComment,
+  favoriteArticle,
+  unfavoriteArticle,
 };
