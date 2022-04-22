@@ -1,4 +1,4 @@
-import { ArticlesFromAPi, User } from './types';
+import { ArticlesFromAPi, Profile, User } from './types';
 
 const apiUrl = 'https://api.realworld.io/api';
 
@@ -104,4 +104,29 @@ function getArticles(
   return fetcher(`/articles?${searchParams}`);
 }
 
-export { apiUrl, signUp, signIn, updateUser, getTags, getArticles };
+function getProfile(username: string): Promise<{ profile: Profile }> {
+  return fetcher(`/profile/${username}`);
+}
+
+function followUser(
+  username: string,
+  token: string,
+): Promise<{ profile: Profile }> {
+  return fetcher(`/profile/${username}/follow`, { method: 'POST', token });
+}
+
+function unFollowUser(username: string, token: string) {
+  return fetcher(`/profile/${username}/follow`, { method: 'DELETE', token });
+}
+
+export {
+  apiUrl,
+  signUp,
+  signIn,
+  updateUser,
+  getTags,
+  getArticles,
+  getProfile,
+  followUser,
+  unFollowUser,
+};

@@ -29,6 +29,13 @@ interface User {
   image: string;
 }
 
+interface Profile {
+  username: string;
+  bio: string | null;
+  image: string;
+  following: boolean;
+}
+
 type ApiErrorsType = Record<string, string>;
 
-export type { Article, User, ApiErrorsType, ArticlesFromAPi };
+export type { Article, User, ApiErrorsType, ArticlesFromAPi, Profile };
