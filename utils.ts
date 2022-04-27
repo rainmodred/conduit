@@ -32,4 +32,14 @@ function deleteCredentials(): void {
   window.localStorage.removeItem(key);
 }
 
-export { saveCredentials, getCredentials, deleteCredentials };
+function formatDate(date: string) {
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  };
+
+  return new Date(date).toLocaleDateString('en-US', options);
+}
+
+export { saveCredentials, getCredentials, formatDate, deleteCredentials };
