@@ -48,6 +48,7 @@ async function fetcher(
     return data;
   } catch (error) {
     console.error(error);
+    return Promise.reject(error);
   }
 }
 
@@ -129,8 +130,8 @@ function createArticle(article: ArticleToCreate, token: string) {
   return fetcher('/articles', { data: { article }, token });
 }
 
-function getArticle(slug: string): Promise<{ article: Article }> {
-  return fetcher(`/articles/${slug}`);
+function getArticle(slug: string): Promise<Article> {
+  return fetcher(`/articles/${slug}`).then(data => data.article);
 }
 
 function updateArticle(
