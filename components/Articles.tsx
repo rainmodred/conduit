@@ -1,15 +1,6 @@
 import ArticlePreview from './ArticlePreview';
 import { Article } from '../types';
-
-function formatDate(date: string) {
-  const options: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  };
-
-  return new Date(date).toLocaleDateString('en-US', options);
-}
+import { formatDate } from '../utils';
 
 interface ArticlesPoprs {
   articles: Article[] | undefined;
