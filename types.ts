@@ -1,4 +1,4 @@
-interface Author {
+interface Profile {
   username: string;
   bio: string | null;
   image: string;
@@ -15,12 +15,16 @@ interface Article {
   updatedAt: string;
   favorited: boolean;
   favoritesCount: number;
-  author: Author;
+  author: Profile;
 }
 
 interface ArticlesFromAPi {
   articles: Article[];
   articlesCount: number;
+}
+
+interface ArticleFromApi {
+  article: Article;
 }
 
 interface User {
@@ -29,13 +33,6 @@ interface User {
   username: string;
   bio: string | null;
   image: string;
-}
-
-interface Profile {
-  username: string;
-  bio: string | null;
-  image: string;
-  following: boolean;
 }
 
 interface ArticleToCreate {
@@ -50,7 +47,7 @@ interface Comment {
   createdAt: Date;
   updatedAt: Date;
   body: string;
-  author: Author;
+  author: Profile;
 }
 
 type ApiErrorsType = Record<string, string>;
@@ -63,4 +60,5 @@ export type {
   Profile,
   ArticleToCreate,
   Comment,
+  ArticleFromApi,
 };
