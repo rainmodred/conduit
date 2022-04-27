@@ -112,26 +112,26 @@ function getArticles(
 }
 
 function getProfile(username: string): Promise<{ profile: Profile }> {
-  return fetcher(`/profile/${username}`);
+  return fetcher(`/profiles/${username}`);
 }
 
 function followUser(
   username: string,
   token: string,
 ): Promise<{ profile: Profile }> {
-  return fetcher(`/profile/${username}/follow`, { method: 'POST', token });
+  return fetcher(`/profiles/${username}/follow`, { method: 'POST', token });
 }
 
 function unFollowUser(username: string, token: string) {
-  return fetcher(`/profile/${username}/follow`, { method: 'DELETE', token });
+  return fetcher(`/profiles/${username}/follow`, { method: 'DELETE', token });
 }
 
 function createArticle(article: ArticleToCreate, token: string) {
   return fetcher('/articles', { data: { article }, token });
 }
 
-function getArticle(slug: string): Promise<Article> {
-  return fetcher(`/articles/${slug}`).then(data => data.article);
+function getArticle(slug: string, token?: string): Promise<Article> {
+  return fetcher(`/articles/${slug}`, { token }).then(data => data.article);
 }
 
 function updateArticle(
@@ -176,7 +176,7 @@ function favoriteArticle(
   slug: string,
   token: string,
 ): Promise<{ article: Article }> {
-  return fetcher(`/articles/${slug}/favorite`, { token });
+  return fetcher(`/articles/${slug}/favorite`, { method: 'POST', token });
 }
 
 function unfavoriteArticle(slug: string, token: string) {

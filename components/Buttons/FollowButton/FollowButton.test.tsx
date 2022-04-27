@@ -6,7 +6,7 @@ import FollowButton from './FollowButton';
 describe('FollowButton', () => {
   it('should render', () => {
     render(
-      <FollowButton followed={false} onClick={jest.fn}>
+      <FollowButton followed={false} onClick={jest.fn} disabled={false}>
         Tom
       </FollowButton>,
     );
@@ -20,7 +20,7 @@ describe('FollowButton', () => {
 
   it('should render button with unfollow text', () => {
     render(
-      <FollowButton followed={true} onClick={jest.fn}>
+      <FollowButton followed={true} onClick={jest.fn} disabled={false}>
         Tom
       </FollowButton>,
     );
@@ -36,7 +36,7 @@ describe('FollowButton', () => {
     const fn = jest.fn();
     const user = userEvent.setup();
     render(
-      <FollowButton followed={false} onClick={fn}>
+      <FollowButton followed={false} onClick={fn} disabled={false}>
         Tom
       </FollowButton>,
     );
@@ -48,5 +48,16 @@ describe('FollowButton', () => {
     );
 
     expect(fn).toBeCalledTimes(1);
+  });
+
+  it('should be disabled', () => {
+    const fn = jest.fn();
+
+    render(
+      <FollowButton followed={false} onClick={fn} disabled={true}>
+        Tom
+      </FollowButton>,
+    );
+    expect(screen.getByRole('button', { name: /follow Tom/i })).toBeDisabled();
   });
 });

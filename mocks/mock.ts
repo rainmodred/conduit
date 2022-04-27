@@ -169,7 +169,7 @@ export const mockArticles = {
         username: 'Gerome',
         bio: null,
         image: 'https://api.realworld.io/images/demo-avatar.png',
-        following: false,
+        following: true,
       },
     },
     {

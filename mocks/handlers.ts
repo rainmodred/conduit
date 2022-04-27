@@ -4,10 +4,12 @@ import { mockUser } from './mock';
 import { Article } from '../types';
 import { mockArticles } from './mock';
 
-const defaultDefay = 200;
+const defaultDelay = 200;
 const userData = {
   user: mockUser,
 };
+
+// Todo get token
 
 export const handlers = [
   rest.get(`${apiUrl}/articles`, (req, res, ctx) => {
@@ -26,18 +28,18 @@ export const handlers = [
       articlesCount: articles.length,
     };
 
-    return res(ctx.status(200), ctx.delay(defaultDefay), ctx.json(data));
+    return res(ctx.status(200), ctx.delay(defaultDelay), ctx.json(data));
   }),
 
   rest.get(`${apiUrl}/articles/feed`, (req, res, ctx) => {
     const token = req.headers.get('Authorization')?.slice(7);
     if (!token || token !== userData.user.token) {
-      return res(ctx.delay(defaultDefay), ctx.status(401));
+      return res(ctx.delay(defaultDelay), ctx.status(401));
     }
 
     return res(
       ctx.status(200),
-      ctx.delay(defaultDefay),
+      ctx.delay(defaultDelay),
       ctx.json({
         articles: [
           {
@@ -61,6 +63,88 @@ export const handlers = [
         articlesCount: 1,
       }),
     );
+  }),
+
+  rest.get(`${apiUrl}/articles/:slug`, (req, res, ctx) => {
+    const { slug } = req.params;
+
+    const article = mockArticles.articles.find(
+      article => article.slug === slug,
+    );
+
+    if (!article) {
+      return res(
+        ctx.status(422),
+        ctx.delay(defaultDelay),
+        ctx.json({ errors: { article: ['not found'] } }),
+      );
+    }
+
+    return res(ctx.status(200), ctx.delay(defaultDelay), ctx.json({ article }));
+  }),
+
+  rest.delete(`${apiUrl}/articles/:slug`, (req, res, ctx) => {
+    const { slug } = req.params;
+    const token = req.headers.get('Authorization')?.slice(7);
+    if (!token || token !== userData.user.token) {
+      return res(ctx.delay(defaultDelay), ctx.status(401));
+    }
+
+    const article = mockArticles.articles.find(
+      article => article.slug === slug,
+    );
+
+    if (!article) {
+      return res(
+        ctx.status(422),
+        ctx.delay(defaultDelay),
+        ctx.json({ errors: { article: ['not found'] } }),
+      );
+    }
+
+    return res(ctx.status(204), ctx.delay(defaultDelay), ctx.json({}));
+  }),
+
+  rest.post(`${apiUrl}/articles/:slug/favorite`, (req, res, ctx) => {
+    const token = req.headers.get('Authorization')?.slice(7);
+    if (!token || token !== userData.user.token) {
+      return res(ctx.delay(defaultDelay), ctx.status(401));
+    }
+
+    return res(
+      ctx.status(200),
+      ctx.delay(defaultDelay),
+      ctx.json({
+        article: {
+          id: 3,
+          slug: 'Create-a-new-implementation-1',
+          title: 'Create a new implementation',
+          description: 'join the community by creating a new implementation',
+          body: 'Share your knowledge and enpower the community by creating a new implementation',
+          createdAt: '2021-11-24T12:11:08.212Z',
+          updatedAt: '2021-11-24T12:11:08.212Z',
+          authorId: 1,
+          tagList: ['implementations'],
+          author: {
+            username: 'Gerome',
+            bio: null,
+            image: 'https://api.realworld.io/images/demo-avatar.png',
+            following: true,
+          },
+          favorited: true,
+          favoritesCount: 2059,
+        },
+      }),
+    );
+  }),
+
+  rest.delete(`${apiUrl}/articles/:slug/favorite`, (req, res, ctx) => {
+    const token = req.headers.get('Authorization')?.slice(7);
+    if (!token || token !== userData.user.token) {
+      return res(ctx.delay(defaultDelay), ctx.status(401));
+    }
+
+    return res(ctx.status(204), ctx.delay(defaultDelay));
   }),
 
   rest.post(`${apiUrl}/users`, (req, res, ctx) => {
@@ -109,6 +193,46 @@ export const handlers = [
       ctx.status(200),
       ctx.json({
         tags: ['welcome', 'implementations', 'codebaseShow', 'introduction'],
+      }),
+    );
+  }),
+
+  rest.post(`${apiUrl}/profiles/:username/follow`, (req, res, ctx) => {
+    const token = req.headers.get('Authorization')?.slice(7);
+    if (!token || token !== userData.user.token) {
+      return res(ctx.delay(defaultDelay), ctx.status(401));
+    }
+
+    return res(
+      ctx.delay(defaultDelay),
+      ctx.status(200),
+      ctx.json({
+        profile: {
+          username: 'Gerome',
+          bio: null,
+          image: 'https://api.realworld.io/images/demo-avatar.png',
+          following: true,
+        },
+      }),
+    );
+  }),
+
+  rest.delete(`${apiUrl}/profiles/:username/follow`, (req, res, ctx) => {
+    const token = req.headers.get('Authorization')?.slice(7);
+    if (!token || token !== userData.user.token) {
+      return res(ctx.delay(defaultDelay), ctx.status(401));
+    }
+
+    return res(
+      ctx.delay(defaultDelay),
+      ctx.status(200),
+      ctx.json({
+        profile: {
+          username: 'Gerome',
+          bio: null,
+          image: 'https://api.realworld.io/images/demo-avatar.png',
+          following: false,
+        },
       }),
     );
   }),
