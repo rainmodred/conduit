@@ -4,9 +4,12 @@ import {
   renderWithAuthProvider,
   screen,
   waitFor,
-} from '../../test-utils';
-import { mockUser } from '../../mocks/mock';
+} from '../../test/test-utils';
+
 import Register from '../../pages/register';
+import db from '../../mocks/db';
+import { buildUser } from '../../mocks/data-generators';
+import { hash, sanitizeUser } from '../../mocks/serverUtils';
 
 const testUser = {
   email: 'test@example.com',
@@ -84,7 +87,12 @@ describe('register page', () => {
     render(renderWithAuthProvider(<Register />));
     const user = userEvent.setup();
 
-    await user.type(screen.getByPlaceholderText(/username/i), 'error');
+    db.user.create(buildUser({ username: testUser.username }));
+
+    await user.type(
+      screen.getByPlaceholderText(/username/i),
+      testUser.username,
+    );
     await user.type(screen.getByPlaceholderText(/email/i), testUser.email);
     await user.type(
       screen.getByPlaceholderText(/password/i),
@@ -97,6 +105,9 @@ describe('register page', () => {
       }),
     );
 
+    expect(
+      await screen.queryByText('email has already been taken'),
+    ).not.toBeInTheDocument();
     expect(
       await screen.findByText('username has already been taken'),
     ).toBeInTheDocument();
@@ -106,11 +117,13 @@ describe('register page', () => {
     render(renderWithAuthProvider(<Register />));
     const user = userEvent.setup();
 
+    db.user.create(buildUser({ email: testUser.email }));
+
     await user.type(
       screen.getByPlaceholderText(/username/i),
       testUser.username,
     );
-    await user.type(screen.getByPlaceholderText(/email/i), 'error@example.com');
+    await user.type(screen.getByPlaceholderText(/email/i), testUser.email);
     await user.type(
       screen.getByPlaceholderText(/password/i),
       testUser.password,
@@ -123,6 +136,9 @@ describe('register page', () => {
     );
 
     expect(
+      await screen.queryByText('username has already been taken'),
+    ).not.toBeInTheDocument();
+    expect(
       await screen.findByText('email has already been taken'),
     ).toBeInTheDocument();
   });
@@ -131,15 +147,16 @@ describe('register page', () => {
     const push = jest.fn();
     render(renderWithAuthProvider(<Register />), { router: { push } });
     const user = userEvent.setup();
+    const randmodUser = buildUser();
 
     await user.type(
       screen.getByPlaceholderText(/username/i),
-      testUser.username,
+      randmodUser.username,
     );
-    await user.type(screen.getByPlaceholderText(/email/i), testUser.email);
+    await user.type(screen.getByPlaceholderText(/email/i), randmodUser.email);
     await user.type(
       screen.getByPlaceholderText(/password/i),
-      testUser.password,
+      randmodUser.password,
     );
 
     await userEvent.click(
@@ -153,6 +170,11 @@ describe('register page', () => {
 
   it('should redirect if user already logged in', () => {
     const push = jest.fn();
+
+    const mockUser = sanitizeUser(
+      db.user.create(buildUser({ password: hash(testUser.password) })),
+    );
+
     render(renderWithAuthProvider(<Register />, mockUser), {
       router: { pathname: '/', push },
     });

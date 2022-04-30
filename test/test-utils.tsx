@@ -3,8 +3,8 @@ import { render, RenderOptions } from '@testing-library/react';
 
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { NextRouter } from 'next/router';
-import { User } from './types';
-import { AuthContext } from './context/AuthContext';
+import { User } from '../types';
+import { AuthContext } from '../context/AuthContext';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
 const mockRouter: NextRouter = {
