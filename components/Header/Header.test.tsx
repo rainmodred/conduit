@@ -1,5 +1,5 @@
 import Header from './Header';
-import { render, renderWithAuthProvider, screen } from '../../test-utils';
+import { render, renderWithAuthProvider, screen } from '../../test/test-utils';
 import { mockUser } from '../../mocks/mock';
 
 describe('Header', () => {

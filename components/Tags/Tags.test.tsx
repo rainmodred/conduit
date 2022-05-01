@@ -1,5 +1,5 @@
 import Tags from './Tags';
-import { render, screen } from '../../test-utils';
+import { render, screen } from '../../test/test-utils';
 import { waitForElementToBeRemoved } from '@testing-library/react';
 import { rest } from 'msw';
 import { server } from '../../mocks/server';
