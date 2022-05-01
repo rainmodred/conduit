@@ -4,9 +4,14 @@ import {
   renderWithAuthProvider,
   screen,
   waitFor,
-} from '../../test-utils';
-import { mockUser } from '../../mocks/mock';
+} from '../../test/test-utils';
 import Login from '../../pages/login';
+import db from '../../mocks/db';
+import { buildUser } from '../../mocks/data-generators';
+import { hash, sanitizeUser } from '../../mocks/serverUtils';
+
+const password = '12345';
+const testUser = db.user.create(buildUser({ password: hash(password) }));
 
 describe('Login page', () => {
   it('should render', () => {
@@ -35,7 +40,7 @@ describe('Login page', () => {
     render(renderWithAuthProvider(<Login />));
     const user = userEvent.setup();
 
-    await user.type(screen.getByPlaceholderText(/email/i), 'test@example.com');
+    await user.type(screen.getByPlaceholderText(/email/i), testUser.email);
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -50,7 +55,7 @@ describe('Login page', () => {
     render(renderWithAuthProvider(<Login />));
     const user = userEvent.setup();
 
-    await user.type(screen.getByPlaceholderText(/password/i), 'password');
+    await user.type(screen.getByPlaceholderText(/password/i), password);
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -65,8 +70,11 @@ describe('Login page', () => {
     render(renderWithAuthProvider(<Login />));
     const user = userEvent.setup();
 
-    await user.type(screen.getByPlaceholderText(/email/i), 'test@example.com');
-    await user.type(screen.getByPlaceholderText(/password/i), 'error');
+    await user.type(screen.getByPlaceholderText(/email/i), testUser.email);
+    await user.type(
+      screen.getByPlaceholderText(/password/i),
+      'invalid password',
+    );
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -84,11 +92,10 @@ describe('Login page', () => {
     render(renderWithAuthProvider(<Login />), { router: { push } });
     const user = userEvent.setup();
 
-    await user.type(
-      screen.getByPlaceholderText(/email/i),
-      'conduitTest@example.com',
-    );
-    await user.type(screen.getByPlaceholderText(/password/i), 'conduitTest');
+    const testUser = db.user.create(buildUser({ password: hash(password) }));
+
+    await user.type(screen.getByPlaceholderText(/email/i), testUser.email);
+    await user.type(screen.getByPlaceholderText(/password/i), password);
 
     await userEvent.click(
       screen.getByRole('button', {
@@ -101,6 +108,9 @@ describe('Login page', () => {
 
   it('should redirect if user already logged in', () => {
     const push = jest.fn();
+    const mockUser = sanitizeUser(
+      db.user.create(buildUser({ password: hash(testUser.password) })),
+    );
     render(renderWithAuthProvider(<Login />, mockUser), {
       router: { pathname: '/', push },
     });
