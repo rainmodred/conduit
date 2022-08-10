@@ -33,6 +33,7 @@ module.exports = {
       files: ['*.ts', '*.tsx'],
       rules: {
         'no-undef': 'off',
+        '@typescript-eslint/no-non-null-assertion': 'off',
       },
     },
   ],
