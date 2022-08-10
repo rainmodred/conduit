@@ -1,3 +1,4 @@
+import { API_URL } from '../config/config';
 import {
   Article,
   ArticlesFromAPi,
@@ -5,8 +6,6 @@ import {
   Profile,
   User,
 } from './types';
-
-const apiUrl = 'https://api.realworld.io/api';
 
 async function fetcher(
   endpoint: string,
@@ -29,12 +28,13 @@ async function fetcher(
   };
 
   try {
-    const response = await fetch(`${apiUrl}${endpoint}`, config);
+    const response = await fetch(`${API_URL}${endpoint}`, config);
 
     if (response.status === 401) {
-      window.localStorage.removeItem('auth');
+      console.log('401');
+      // window.localStorage.removeItem('auth');
       // TODO: logout
-      window.location = '/';
+      // window.location = '/';
     }
 
     if (!response.ok) {
@@ -44,10 +44,10 @@ async function fetcher(
     }
 
     const data = await response.json();
-
+    // console.log('APIDATA', data);
     return data;
   } catch (error) {
-    console.error(error);
+    console.error('API REJECT', error);
     return Promise.reject(error);
   }
 }
@@ -88,9 +88,10 @@ function getTags(): Promise<{ tags: string[] }> {
 
 function getArticles(
   page = 1,
-  token?: string | null,
+  token?: string,
   params?: Record<string, string>,
 ): Promise<ArticlesFromAPi> {
+  //TODO: change to number
   const limit = '10';
 
   let offset = '0';
@@ -104,11 +105,24 @@ function getArticles(
     offset,
   }).toString();
 
-  if (token) {
-    return fetcher(`/articles/feed?${searchParams}`, { token });
+  return fetcher(`/articles?${searchParams}`, { token });
+}
+
+function getFeed(page = 1, token?: string, params?: Record<string, string>) {
+  const limit = '10';
+
+  let offset = '0';
+  if (page > 1) {
+    offset = (Number(limit) * page - 10).toString();
   }
 
-  return fetcher(`/articles?${searchParams}`);
+  const searchParams = new URLSearchParams({
+    ...params,
+    limit,
+    offset,
+  }).toString();
+
+  return fetcher(`/articles/feed?${searchParams}`, { token });
 }
 
 function getProfile(username: string): Promise<{ profile: Profile }> {
@@ -184,12 +198,13 @@ function unfavoriteArticle(slug: string, token: string) {
 }
 
 export {
-  apiUrl,
+  API_URL,
   signUp,
   signIn,
   updateUser,
   getTags,
   getArticles,
+  getFeed,
   getProfile,
   followUser,
   unFollowUser,
