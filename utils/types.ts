@@ -50,15 +50,19 @@ interface Comment {
   author: Profile;
 }
 
-type ApiErrorsType = Record<string, string>;
+type AuthErrors = {
+  errors: Record<string, [string]>;
+};
+type FormattedAuthErrors = Record<string, { message: string }>;
 
 export type {
   Article,
   User,
-  ApiErrorsType,
   ArticlesFromAPi,
   Profile,
   ArticleToCreate,
   Comment,
   ArticleFromApi,
+  AuthErrors,
+  FormattedAuthErrors,
 };

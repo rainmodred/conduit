@@ -1,4 +1,4 @@
-import { User } from './types';
+import { AuthErrors, User } from './types';
 
 // function setToStorage<T>(key: string, value: T): void {
 //   window.localStorage.setItem(key, JSON.stringify(value));
@@ -42,4 +42,24 @@ function formatDate(date: string) {
   return new Date(date).toLocaleDateString('en-US', options);
 }
 
-export { saveCredentials, getCredentials, formatDate, deleteCredentials };
+function formatAuthErrors(
+  authErrors: AuthErrors,
+): Record<string, { message: string }> {
+  const { errors } = authErrors;
+  return Object.keys(errors).reduce((result, key) => {
+    const formattedError = {
+      [key]: {
+        message: `${key} ${errors[key].join()}`,
+      },
+    };
+    return Object.assign(result, formattedError);
+  }, {});
+}
+
+export {
+  saveCredentials,
+  getCredentials,
+  formatDate,
+  deleteCredentials,
+  formatAuthErrors,
+};
