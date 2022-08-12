@@ -1,8 +1,8 @@
-import ArticlePreview from './ArticlePreview';
-import { Article } from '../types';
-import { formatDate } from '../utils';
+import ArticlePreview from './ArticlePreview/ArticlePreview';
+import { Article } from '../../utils/types';
+import { formatDate } from '../../utils/utils';
 
-interface ArticlesPoprs {
+interface ArticleProps {
   articles: Article[] | undefined;
   isLoading: boolean;
   isError: boolean;
@@ -12,7 +12,7 @@ export default function Articles({
   articles,
   isLoading,
   isError,
-}: ArticlesPoprs): JSX.Element {
+}: ArticleProps): JSX.Element {
   if (isLoading) {
     return <div className="article-preview">Loading articles...</div>;
   }
