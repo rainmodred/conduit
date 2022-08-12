@@ -1,11 +1,3 @@
-interface FavoriteArticleButtonProps {
-  children: React.ReactNode;
-  favorited: boolean;
-  size: 'sm' | 'lg';
-  disabled: boolean;
-  onClick: () => void;
-}
-
 function getButtonText(favorited: boolean) {
   const str = ' Article ';
 
@@ -14,6 +6,14 @@ function getButtonText(favorited: boolean) {
   }
 
   return 'Favorite' + str;
+}
+
+interface FavoriteArticleButtonProps {
+  children: React.ReactNode;
+  favorited: boolean;
+  size: 'sm' | 'lg';
+  disabled?: boolean;
+  onClick: () => void;
 }
 
 export default function FavoriteArticleButton({

@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event';
 
-import { render, screen } from '../../../test/test-utils';
+import { render, screen } from '../../../../test/test-utils';
 import DeleteButton from './DeleteButton';
 
 describe('DeleteButton', () => {
