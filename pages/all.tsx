@@ -1,31 +1,31 @@
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import { useQuery } from 'react-query';
-import { getArticles } from '../api';
-import Articles from '../components/Articles';
+import { dehydrate, QueryClient, useQuery } from 'react-query';
+
+import Articles from '../components/Articles/Articles';
 import FeedNavigation from '../components/FeedNavigation';
-import Pagination from '../components/Pagination/Pagination';
+import Pagination from '../components/Shared/Pagination/Pagination';
 import Tags from '../components/Tags/Tags';
-import { itemsPerPage } from '../constants';
-import { ArticlesFromAPi } from '../types';
+import { useAuth } from '../context/AuthContext';
+import { getArticles } from '../utils/api';
+import { ARTICLES_LIMIT } from '../config/config';
 
-interface AllProps {
-  articlesData: ArticlesFromAPi;
-}
-
-export default function All({ articlesData }: AllProps): JSX.Element {
+export default function All(): JSX.Element {
   const { isReady, query } = useRouter();
+  const { user } = useAuth();
 
   const page = Number(query?.page) || 1;
   const { data, isLoading, isIdle, isError, isSuccess } = useQuery(
     ['articles', 'all', page],
-    () => getArticles(page),
-    { enabled: isReady, initialData: articlesData },
+    () => getArticles(page, user?.token),
+    {
+      enabled: isReady && Boolean(user || user === undefined),
+    },
   );
 
   let totalPages = 0;
   if (isSuccess) {
-    totalPages = Math.ceil(data?.articlesCount / itemsPerPage);
+    totalPages = Math.ceil(data?.articlesCount / ARTICLES_LIMIT);
   }
 
   return (
@@ -58,10 +58,18 @@ export default function All({ articlesData }: AllProps): JSX.Element {
   );
 }
 
-export const getServerSideProps: GetServerSideProps<
-  AllProps
-> = async context => {
+export const getServerSideProps: GetServerSideProps = async context => {
   const page = parseInt(context.query.page as string) || 1;
-  const articlesData = await getArticles(page);
-  return { props: { articlesData } };
+
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery(['articles', 'all', page], () =>
+    getArticles(page),
+  );
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+    },
+  };
 };
