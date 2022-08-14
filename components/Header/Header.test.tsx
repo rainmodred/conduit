@@ -1,6 +1,7 @@
 import Header from './Header';
 import { render, renderWithAuthProvider, screen } from '../../test/test-utils';
-import { mockUser } from '../../mocks/mock';
+import { authenticate } from '../../mocks/serverUtils';
+import { createUser } from '../../mocks/db';
 
 describe('Header', () => {
   it('should render', () => {
@@ -25,7 +26,13 @@ describe('Header', () => {
   });
 
   it('should change NavLink if user logged in', () => {
-    render(renderWithAuthProvider(<Header />, mockUser));
+    const { email, password } = createUser();
+    const { user } = authenticate({
+      email: email,
+      password: password,
+    });
+
+    render(renderWithAuthProvider(<Header />, user));
 
     expect(screen.getByText(/conduit$/i)).toHaveAttribute('href', '/');
     expect(
