@@ -89,9 +89,8 @@ function getTags(): Promise<{ tags: string[] }> {
 function getArticles(
   page = 1,
   token?: string,
-  params?: Record<string, string>,
+  params?: Record<string, unknown>,
 ): Promise<ArticlesFromAPi> {
-  //TODO: change to number
   const limit = '10';
 
   let offset = '0';
