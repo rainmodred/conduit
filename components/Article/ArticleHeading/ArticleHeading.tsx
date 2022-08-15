@@ -8,45 +8,41 @@ import {
   followUser,
   unfavoriteArticle,
   unFollowUser,
-} from '../../api';
-import { useAuth } from '../../context/AuthContext';
-import { Article } from '../../types';
-import DeleteButton from '../Buttons/DeleteButton/DeleteButton';
-import EditButton from '../Buttons/EditButton/EditButton';
-import FavoriteArticleButton from '../Buttons/FavoriteButton/FavoriteButton';
-import FollowButton from '../Buttons/FollowButton/FollowButton';
+} from '../../../utils/api';
+import { useAuth } from '../../../context/AuthContext';
+import { Article } from '../../../utils/types';
+import DeleteButton from '../../Shared/Buttons/DeleteButton/DeleteButton';
+import EditButton from '../../Shared/Buttons/EditButton/EditButton';
+import FollowButton from '../../Shared/Buttons/FollowButton/FollowButton';
+import FavoriteArticleButton from '../../Shared/Buttons/FavoriteButton/FavoriteButton';
 
 interface ArticleHeadingProps {
   slug: string;
-  heading: string;
-  authorUsername: string;
-  authorImage: string;
-  createdAt: string;
+  title: string;
   favorited: boolean;
+  createdAt: string;
   favoriteCount: number;
-  following: boolean;
+  author: {
+    username: string;
+    image: string;
+    following: boolean;
+  };
 }
 
-export default function ArticleHeading({
-  slug,
-  heading,
-  authorUsername,
-  authorImage,
-  createdAt,
-  favorited,
-  favoriteCount,
-  following,
-}: ArticleHeadingProps): JSX.Element {
+export default function ArticleHeading(
+  props: ArticleHeadingProps,
+): JSX.Element {
+  const { slug, title, createdAt, favorited, favoriteCount, author } = props;
   const { user } = useAuth();
   const { push } = useRouter();
   const queryClient = useQueryClient();
   const query = ['article', `${slug}`];
-
+  // console.log('props', props);
   const followMutation = useMutation(
     () =>
-      following
-        ? unFollowUser(authorUsername, user?.token as string)
-        : followUser(authorUsername, user?.token as string),
+      author.following
+        ? unFollowUser(author.username, user?.token as string)
+        : followUser(author.username, user?.token as string),
     {
       onMutate: async () => {
         await queryClient.cancelQueries(query);
@@ -66,12 +62,22 @@ export default function ArticleHeading({
       },
       onError: (err, variables, context) => {
         if (context?.previousValue) {
+          // console.log('error', err, variables, context);
           queryClient.setQueryData<Article>(query, context.previousValue);
         }
       },
 
-      onSettled: () => {
-        queryClient.invalidateQueries(query);
+      onSuccess: data => {
+        // Better keys?
+        queryClient.invalidateQueries(['articles', 'feed', 1]);
+        // console.log('data', data);
+        // queryClient.setQueryData<Article>(query, oldData => {
+        //   // console.log('oldData', oldData);
+        //   return {
+        //     ...oldData,
+        //     author: { ...data.profile },
+        //   };
+        // });
       },
     },
   );
@@ -124,14 +130,19 @@ export default function ArticleHeading({
     },
   );
 
-  const isAuthor = user?.username === authorUsername;
+  const isAuthor = user?.username === author.username;
 
   function handleFollowClick() {
     if (!user) {
       push('/register');
       return;
     }
+
+    // if (author.following) {
+    //   unfollowMutation.mutate();
+    // } else {
     followMutation.mutate();
+    // }
   }
 
   function handleFavoriteClick() {
@@ -154,13 +165,13 @@ export default function ArticleHeading({
   return (
     <div className="banner">
       <div className="container">
-        <h1>{heading}</h1>
+        <h1>{title}</h1>
 
         <div className="article-meta">
-          <Link href={`/profile/${authorUsername}`}>
+          <Link href={`/profile/${author.username}`}>
             <a style={{ verticalAlign: 'middle' }}>
               <Image
-                src={authorImage}
+                src={author.image}
                 alt="author avatar"
                 width="32"
                 height="32"
@@ -168,9 +179,9 @@ export default function ArticleHeading({
             </a>
           </Link>
           <div className="info">
-            <Link href={`/profile/${authorUsername}`}>
+            <Link href={`/profile/${author.username}`}>
               <a href="" className="author">
-                {authorUsername}
+                {author.username}
               </a>
             </Link>
 
@@ -189,11 +200,11 @@ export default function ArticleHeading({
           ) : (
             <span>
               <FollowButton
-                followed={following}
+                followed={author.following}
                 onClick={handleFollowClick}
                 disabled={isDisabled}
               >
-                {authorUsername}
+                {author.username}
               </FollowButton>
               &nbsp;&nbsp;
               <FavoriteArticleButton

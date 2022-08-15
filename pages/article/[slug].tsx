@@ -1,26 +1,24 @@
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import { useQuery } from 'react-query';
-import { getArticle } from '../../api';
-import ArticleHeading from '../../components/Article/ArticleHeading';
+import { dehydrate, QueryClient, useQuery } from 'react-query';
+import { getArticle } from '../../utils/api';
+import ArticleHeading from '../../components/Article/ArticleHeading/ArticleHeading';
 import { useAuth } from '../../context/AuthContext';
-import { Article as ArticleModel } from '../../types';
-import { formatDate } from '../../utils';
+import { Article as ArticleModel } from '../../utils/types';
+import { formatDate } from '../../utils/utils';
 
-interface ArticleProps {
-  article: ArticleModel;
-}
-
-export default function Article({ article }: ArticleProps): JSX.Element {
+export default function Article(): JSX.Element {
   const { query, isReady } = useRouter();
   const { user } = useAuth();
-
+  console.log('query', query, user);
   const { data, isLoading, isIdle, error } = useQuery(
     ['article', query?.slug],
     () => getArticle(query?.slug as string, user?.token),
-    { enabled: isReady && Boolean(user), initialData: article },
+    { enabled: isReady && Boolean(user || user == undefined) },
   );
+
+  // console.log('DATA', data, query);
 
   if (isLoading || isIdle) {
     return <p>Loading...</p>;
@@ -29,8 +27,6 @@ export default function Article({ article }: ArticleProps): JSX.Element {
   if (error) {
     console.error('TODO: article not found');
   }
-
-  // console.log('response', data, isLoading, isIdle, isReady, user);
 
   const {
     author,
@@ -49,14 +45,12 @@ export default function Article({ article }: ArticleProps): JSX.Element {
     <div className="article-page">
       {data && (
         <ArticleHeading
-          authorUsername={author.username}
-          authorImage={author.image}
           createdAt={formatDate(createdAt)}
           favoriteCount={favoritesCount}
           favorited={favorited}
-          following={author.following}
-          heading={title}
+          title={title}
           slug={slug}
+          author={author}
         />
       )}
 
@@ -175,15 +169,16 @@ export async function getServerSideProps({
 }: {
   params: { slug: string };
 }) {
-  try {
-    const article = await getArticle(params.slug);
+  const queryClient = new QueryClient();
+  const { slug } = params;
 
-    return {
-      props: { article },
-    };
-  } catch (error) {
-    return {
-      props: { error: 'error' },
-    };
-  }
+  await queryClient.prefetchQuery(['article', slug], () =>
+    getArticle(slug as string),
+  );
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+    },
+  };
 }
