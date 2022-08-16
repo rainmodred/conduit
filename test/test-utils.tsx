@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
-
+import userEvent from '@testing-library/user-event';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { NextRouter } from 'next/router';
 import { User } from '../utils/types';
@@ -85,4 +85,4 @@ function renderWithAuthProvider(
 }
 
 export * from '@testing-library/react';
-export { customRender as render, renderWithAuthProvider };
+export { customRender as render, renderWithAuthProvider, userEvent };

@@ -1,12 +1,11 @@
 import { JWT_SECRET } from '../config/config';
-import db from './db';
+import db, { ArticleDB, UserDB } from './db';
 import jwt from 'jsonwebtoken';
-import { createResponseComposition, context } from 'msw';
+import { createResponseComposition, context, RestRequest } from 'msw';
+import { Overrides } from './data-generators';
+import { Article, Profile, User } from '../utils/types';
 
-//TODO
 const isTesting = process.env.NODE_ENV === 'test';
-
-console.log('is TESTING', isTesting);
 
 export const delayedResponse = createResponseComposition(undefined, [
   context.delay(isTesting ? 0 : 1000),
@@ -22,10 +21,41 @@ function hash(str: string) {
   return String(hash >>> 0);
 }
 
-function sanitizeUser(user: any) {
-  const { password, favoritedArticles, followedBy, articles, ...rest } = user;
+function sanitizeUser(user: UserDB): User {
+  const { id, password, favoritedArticles, followedBy, articles, ...rest } =
+    user;
 
   return rest;
+}
+
+function sanitizeProfile(user: UserDB, overrides?: Overrides): Profile {
+  const {
+    id,
+    email,
+    password,
+    favoritedArticles,
+    followedBy,
+    articles,
+    ...rest
+  } = user;
+
+  return {
+    ...rest,
+    following: false,
+    ...overrides,
+  };
+}
+
+function sanitizeArticle(article: ArticleDB, overrides?: Overrides): Article {
+  const { id, tagList, favoritedBy, author, ...rest } = article;
+
+  return {
+    ...rest,
+    favorited: false,
+    author: sanitizeProfile(author),
+    tagList: tagList.map(({ name }) => name),
+    ...overrides,
+  };
 }
 
 function authenticate({
@@ -45,7 +75,8 @@ function authenticate({
 
   if (user?.password === hash(password)) {
     const sanitizedUser = sanitizeUser(user);
-    const token = jwt.sign(sanitizedUser, JWT_SECRET);
+    const token = jwt.sign({ ...sanitizedUser, id: user.id }, JWT_SECRET);
+
     return { user: { ...sanitizedUser, token } };
   }
 
@@ -53,4 +84,36 @@ function authenticate({
   throw error;
 }
 
-export { hash, authenticate, sanitizeUser };
+function requireAuth(req: RestRequest) {
+  try {
+    const encodedToken = req.headers.get('Authorization')?.slice(7);
+    if (!encodedToken) {
+      throw new Error('No authorization token provided!');
+    }
+    const decodedToken = jwt.verify(encodedToken, JWT_SECRET) as { id: string };
+    const user = db.user.findFirst({
+      where: {
+        id: {
+          equals: decodedToken.id,
+        },
+      },
+    });
+
+    if (!user) {
+      throw Error('Unauthorized');
+    }
+
+    return user;
+  } catch (err) {
+    console.log('err', err);
+  }
+}
+
+export {
+  hash,
+  authenticate,
+  sanitizeUser,
+  requireAuth,
+  sanitizeArticle,
+  sanitizeProfile,
+};
