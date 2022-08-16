@@ -31,10 +31,12 @@ async function fetcher(
     const response = await fetch(`${API_URL}${endpoint}`, config);
 
     if (response.status === 401) {
-      console.log('401');
-      // window.localStorage.removeItem('auth');
-      // TODO: logout
-      // window.location = '/';
+      window.localStorage.removeItem('auth');
+      window.location = '/login';
+    }
+
+    if (response.status === 204) {
+      return;
     }
 
     if (!response.ok) {
