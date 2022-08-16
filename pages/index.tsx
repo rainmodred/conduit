@@ -1,13 +1,13 @@
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useQuery } from 'react-query';
-import { getArticles } from '../api';
-import Articles from '../components/Articles';
+import { getFeed } from '../utils/api';
+import Articles from '../components/Articles/Articles';
 import FeedNavigation from '../components/FeedNavigation';
-import Pagination from '../components/Pagination/Pagination';
+import Pagination from '../components/Shared/Pagination/Pagination';
 import Tags from '../components/Tags/Tags';
-import { itemsPerPage } from '../constants';
 import { useAuth } from '../context/AuthContext';
+import { ARTICLES_LIMIT } from '../config/config';
 
 export default function Home() {
   const { user } = useAuth();
@@ -17,13 +17,13 @@ export default function Home() {
 
   const { data, isLoading, isIdle, isError, isSuccess } = useQuery(
     ['articles', 'feed', page],
-    () => getArticles(page, user?.token as string),
+    () => getFeed(page, user?.token as string),
     { enabled: isReady && Boolean(user) },
   );
 
   let totalPages = 0;
   if (isSuccess) {
-    totalPages = Math.ceil(data?.articlesCount / itemsPerPage);
+    totalPages = Math.ceil(data?.articlesCount / ARTICLES_LIMIT);
   }
 
   useEffect(() => {
