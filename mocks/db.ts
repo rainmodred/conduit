@@ -126,7 +126,11 @@ function initFake() {
     username: 'jerry',
     password: '1234',
   });
-  const author = createUser({ username: 'tom' });
+  const author = createUser({
+    email: 'tom@example.com',
+    username: 'tom',
+    password: '1234',
+  });
   const ARTICLES_COUNT = 3;
   for (let i = 0; i < ARTICLES_COUNT; i++) {
     createArticle({
