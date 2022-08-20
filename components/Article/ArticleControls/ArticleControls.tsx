@@ -1,11 +1,11 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { Profile } from '../../../utils/types';
 
 import AuthorControls from '../AuthorControls/AuthorControls';
 import ReaderControls from '../ReaderControls/ReaderControls';
 import { useAuth } from '../../../context/AuthContext';
 import { useRouter } from 'next/router';
+import Avatar from '../../Shared/Avatar/Avatar';
 
 interface ArticleControlsProps {
   slug: string;
@@ -67,12 +67,7 @@ export default function ArticleControls({
     <div className="article-meta">
       <Link href={`/profile/${author.username}`}>
         <a style={{ verticalAlign: 'middle' }}>
-          <Image
-            src={author.image}
-            alt="author avatar"
-            width="32"
-            height="32"
-          />
+          <Avatar src={author.image} alt="article author avatar" />
         </a>
       </Link>
       <div className="info">

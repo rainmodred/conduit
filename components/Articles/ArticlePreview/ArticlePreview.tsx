@@ -1,7 +1,7 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { useMutation } from 'react-query';
 import { Article } from '../../../utils/types';
+import Avatar from '../../Shared/Avatar/Avatar';
 import FavoriteArticleButton from '../../Shared/Buttons/FavoriteButton/FavoriteButton';
 
 type ArticlePreviewProps = Omit<Article, 'updatedAt' | 'body'>;
@@ -27,12 +27,7 @@ export default function ArticlePreview({
     <div className="article-preview">
       <div className="article-meta">
         <a href={`/profile/${username}`}>
-          <Image
-            src={image}
-            width="32"
-            height="32"
-            alt="article author avatar"
-          />
+          <Avatar src={image} alt="author avatar" />
         </a>
         <div className="info">
           <a href="" className="author">
