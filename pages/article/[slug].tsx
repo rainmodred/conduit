@@ -8,6 +8,8 @@ import useFollowMutation from '../../hooks/useFollowMutation';
 import { getArticle } from '../../utils/api';
 import { Article as ArticleModel } from '../../utils/types';
 
+// TODO: add skeleton loading
+// TODO: add markdown suppport
 export default function Article(): JSX.Element {
   const { data, isLoading, isIdle, error } = useArticle();
 
@@ -40,7 +42,6 @@ export default function Article(): JSX.Element {
     deleteMutation.mutate();
   }
 
-  // TODO: add skeleton loading
   if (isLoading || isIdle) {
     return <p>Loading...</p>;
   }
@@ -83,10 +84,7 @@ export default function Article(): JSX.Element {
       <div className="container page">
         <div className="row article-content">
           <div className="col-md-12">
-            <p>
-              Web development technologies have evolved at an incredible clip
-              over the past few years.
-            </p>
+            <p>{body}</p>
             <h2 id="introducing-ionic">Introducing RealWorld.</h2>
             <p>It's a great solution for learning how other frameworks work.</p>
           </div>
