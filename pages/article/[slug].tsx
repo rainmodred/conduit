@@ -1,32 +1,15 @@
-import { GetServerSideProps } from 'next';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
 import { dehydrate, QueryClient, useQuery } from 'react-query';
+
+import ArticleControls from '../../components/Article/ArticleControls/ArticleControls';
+import useArticle from '../../hooks/useArticle';
+import { useDeleteMutation } from '../../hooks/useDeleteMutation';
+import useFavoriteMutation from '../../hooks/useFavoriteMutation';
+import useFollowMutation from '../../hooks/useFollowMutation';
 import { getArticle } from '../../utils/api';
-import ArticleHeading from '../../components/Article/ArticleHeading/ArticleHeading';
-import { useAuth } from '../../context/AuthContext';
 import { Article as ArticleModel } from '../../utils/types';
-import { formatDate } from '../../utils/utils';
 
 export default function Article(): JSX.Element {
-  const { query, isReady } = useRouter();
-  const { user } = useAuth();
-  console.log('query', query, user);
-  const { data, isLoading, isIdle, error } = useQuery(
-    ['article', query?.slug],
-    () => getArticle(query?.slug as string, user?.token),
-    { enabled: isReady && Boolean(user || user == undefined) },
-  );
-
-  // console.log('DATA', data, query);
-
-  if (isLoading || isIdle) {
-    return <p>Loading...</p>;
-  }
-
-  if (error) {
-    console.error('TODO: article not found');
-  }
+  const { data, isLoading, isIdle, error } = useArticle();
 
   const {
     author,
@@ -41,18 +24,61 @@ export default function Article(): JSX.Element {
     updatedAt,
   } = data ?? ({} as ArticleModel);
 
+  const followMutation = useFollowMutation(slug, author);
+  const favoriteMutation = useFavoriteMutation(slug, favorited);
+  const deleteMutation = useDeleteMutation(slug);
+
+  function handleFollowClick() {
+    followMutation.mutate();
+  }
+
+  function handleFavoriteClick() {
+    favoriteMutation.mutate();
+  }
+
+  function handleDeleteArticle() {
+    deleteMutation.mutate();
+  }
+
+  // TODO: add skeleton loading
+  if (isLoading || isIdle) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    console.error('TODO: article not found');
+  }
+
+  const isDisabled =
+    followMutation.isLoading ||
+    favoriteMutation.isLoading ||
+    deleteMutation.isLoading;
+
   return (
     <div className="article-page">
-      {data && (
-        <ArticleHeading
-          createdAt={formatDate(createdAt)}
-          favoriteCount={favoritesCount}
-          favorited={favorited}
-          title={title}
-          slug={slug}
-          author={author}
-        />
-      )}
+      <div className="banner">
+        <div className="container">
+          <h1>{title}</h1>
+
+          <ArticleControls
+            slug={slug}
+            isDisabled={isDisabled}
+            isFavorited={favorited}
+            isFollowing={author.following}
+            onDelete={handleDeleteArticle}
+            onFavorite={handleFavoriteClick}
+            onFollow={handleFollowClick}
+            author={{
+              username: author.username,
+              bio: author.bio,
+              following: false,
+              image: author.image,
+            }}
+            createdAt={createdAt}
+            favoritesCount={favoritesCount}
+          />
+        </div>
+      </div>
 
       <div className="container page">
         <div className="row article-content">
@@ -69,26 +95,23 @@ export default function Article(): JSX.Element {
         <hr />
 
         <div className="article-actions">
-          <div className="article-meta">
-            <a href="profile.html">
-              <img src="http://i.imgur.com/Qr71crq.jpg" />
-            </a>
-            <div className="info">
-              <a href="" className="author">
-                Eric Simons
-              </a>
-              <span className="date">January 20th</span>
-            </div>
-            <button className="btn btn-sm btn-outline-secondary">
-              <i className="ion-plus-round"></i>
-              &nbsp; Follow Eric Simons
-            </button>
-            &nbsp;
-            <button className="btn btn-sm btn-outline-primary">
-              <i className="ion-heart"></i>
-              &nbsp; Favorite Post <span className="counter">(29)</span>
-            </button>
-          </div>
+          <ArticleControls
+            slug={slug}
+            isDisabled={isDisabled}
+            isFavorited={favorited}
+            isFollowing={author.following}
+            onDelete={handleDeleteArticle}
+            onFavorite={handleFavoriteClick}
+            onFollow={handleFollowClick}
+            author={{
+              username: author.username,
+              bio: author.bio,
+              following: false,
+              image: author.image,
+            }}
+            createdAt={createdAt}
+            favoritesCount={favoritesCount}
+          />
         </div>
 
         <div className="row">
