@@ -44,8 +44,8 @@ interface ArticleToCreate {
 
 interface Comment {
   id: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   body: string;
   author: Profile;
 }

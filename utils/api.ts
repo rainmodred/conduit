@@ -5,6 +5,7 @@ import {
   ArticleToCreate,
   Profile,
   User,
+  Comment,
 } from './types';
 
 async function fetcher(
