@@ -8,6 +8,7 @@ import {
   delayedResponse,
   requireAuth,
   sanitizeArticle,
+  sanitizeComment,
   sanitizeProfile,
 } from '../serverUtils';
 
@@ -210,6 +211,24 @@ export const articleHandlers = [
     } catch (error) {
       return delayedResponse(ctx.status(401));
     }
+  }),
+
+  rest.get(`${API_URL}/articles/:slug/comments`, (req, _res, ctx) => {
+    const { slug } = req.params as { slug: string };
+    const comments = db.comment.findMany({
+      where: {
+        article: {
+          slug: { equals: slug },
+        },
+      },
+    });
+
+    const sanitizedComments = comments.map(comment => sanitizeComment(comment));
+
+    return delayedResponse(
+      ctx.status(200),
+      ctx.json({ comments: sanitizedComments }),
+    );
   }),
 
   rest.get(`${API_URL}/tags`, (_req, _res, ctx) => {

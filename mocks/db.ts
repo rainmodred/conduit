@@ -10,6 +10,7 @@ import {
 
 import {
   buildArticle,
+  buildComment,
   buildTag,
   buildUser,
   Overrides,
@@ -47,13 +48,14 @@ function createDB() {
       name: String,
     },
 
-    // comment: {
-    //   id: primaryKey(Number),
-    //   createdAt: Date,
-    //   updatedAt: Date,
-    //   body: String,
-    //   author: oneOf('user'),
-    // },
+    comment: {
+      id: primaryKey(Number),
+      createdAt: Date,
+      updatedAt: Date,
+      body: String,
+      author: oneOf('user'),
+      article: oneOf('article'),
+    },
   });
 }
 
@@ -70,6 +72,7 @@ type Value<Key extends keyof DB> = Omit<
 export type UserDB = Value<'user'>;
 export type ArticleDB = Value<'article'>;
 export type TagDB = Value<'tag'>;
+export type CommentDB = Value<'comment'>;
 
 // TODO: better types
 export function createUser(overrides?: Overrides) {
@@ -120,8 +123,30 @@ export function createArticle(overrides?: Overrides) {
   return article;
 }
 
+export function createComment(overrides?: Overrides) {
+  const comment = buildComment(overrides);
+  const author = db.user.findFirst({
+    where: { id: { equals: overrides?.author.id } },
+  })!;
+  const article = db.article.findFirst({
+    where: { id: { equals: overrides?.article.id } },
+  });
+
+  if (!author || !article) {
+    throw new Error('Author or Article not found');
+  }
+
+  db.comment.create({
+    ...comment,
+    author,
+    article,
+  });
+
+  return comment;
+}
+
 function initFake() {
-  createUser({
+  const user = createUser({
     email: 'jerry@example.com',
     username: 'jerry',
     password: '1234',
@@ -131,16 +156,26 @@ function initFake() {
     username: 'tom',
     password: '1234',
   });
-  const ARTICLES_COUNT = 3;
+
+  const initialArticle = createArticle({
+    author,
+  });
+  const ARTICLES_COUNT = 2;
   for (let i = 0; i < ARTICLES_COUNT; i++) {
     createArticle({
       author,
     });
   }
 
+  const COMMENTS_COUNT = 5;
+  for (let i = 0; i < COMMENTS_COUNT; i++) {
+    createComment({ author: user, article: initialArticle });
+  }
+
   persistDb('user');
   persistDb('article');
   persistDb('tag');
+  persistDb('comment');
 }
 
 export type Model = keyof typeof db;
@@ -244,6 +279,26 @@ export const initializeDb = () => {
             tagList,
             author,
           });
+        });
+      }
+      if (key === 'comment') {
+        dataEntres.forEach((entry: CommentDB) => {
+          const { author: authorRef, article: articleRef, ...rest } = entry;
+
+          const author = db.user.findFirst({
+            where: { id: { equals: authorRef.id } },
+          })!;
+          const article = db.article.findFirst({
+            where: { id: { equals: articleRef.id } },
+          });
+
+          const comment = db.comment.findFirst({
+            where: { id: { equals: entry.id } },
+          });
+
+          if (!comment) {
+            model.create({ ...rest, author, article });
+          }
         });
       }
     }

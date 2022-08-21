@@ -1,6 +1,8 @@
 const { faker } = require('@faker-js/faker');
 // import { faker } from '@faker-js/faker';
 
+import { Comment } from '../utils/types';
+
 export type Overrides = Record<string, unknown>;
 
 faker.seed(42);
@@ -44,4 +46,14 @@ function buildTag(overrides?: Overrides) {
   };
 }
 
-export { buildUser, buildArticle, buildTag };
+function buildComment(overrides?: Overrides): Omit<Comment, 'author'> {
+  return {
+    id: faker.datatype.uuid(),
+    createdAt: faker.date.past().toISOString(),
+    updatedAt: faker.date.past().toISOString(),
+    body: faker.lorem.lines(),
+    ...overrides,
+  };
+}
+
+export { buildUser, buildArticle, buildTag, buildComment };

@@ -1,9 +1,9 @@
 import { JWT_SECRET } from '../config/config';
-import db, { ArticleDB, UserDB } from './db';
+import db, { ArticleDB, CommentDB, UserDB } from './db';
 import jwt from 'jsonwebtoken';
 import { createResponseComposition, context, RestRequest } from 'msw';
 import { Overrides } from './data-generators';
-import { Article, Profile, User } from '../utils/types';
+import { Article, Profile, User, Comment } from '../utils/types';
 
 const isTesting = process.env.NODE_ENV === 'test';
 
@@ -55,6 +55,17 @@ function sanitizeArticle(article: ArticleDB, overrides?: Overrides): Article {
     author: sanitizeProfile(author),
     tagList: tagList.map(({ name }) => name),
     ...overrides,
+  };
+}
+
+function sanitizeComment(comment: CommentDB): Comment {
+  const { article, author, ...rest } = comment;
+  if (!author) {
+    throw new Error('Comment author not found');
+  }
+  return {
+    ...rest,
+    author: sanitizeProfile(author),
   };
 }
 
@@ -116,4 +127,5 @@ export {
   requireAuth,
   sanitizeArticle,
   sanitizeProfile,
+  sanitizeComment,
 };
