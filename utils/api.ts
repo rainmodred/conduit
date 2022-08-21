@@ -166,11 +166,8 @@ function deleteArticle(slug: string, token: string): Promise<unknown> {
   return fetcher(`/articles/${slug}`, { method: 'DELETE', token });
 }
 
-function getComments(
-  slug: string,
-  token?: string,
-): Promise<{ comments: Comment[] }> {
-  return fetcher(`/articles/${slug}/comments`, { token });
+function getComments(slug: string): Promise<Comment[]> {
+  return fetcher(`/articles/${slug}/comments`).then(data => data.comments);
 }
 
 function createComment(
