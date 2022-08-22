@@ -43,7 +43,7 @@ interface ArticleToCreate {
 }
 
 interface Comment {
-  id: number;
+  id: string;
   createdAt: string;
   updatedAt: string;
   body: string;

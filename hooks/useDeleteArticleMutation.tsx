@@ -4,7 +4,7 @@ import { useMutation } from 'react-query';
 import { useAuth } from '../context/AuthContext';
 import { deleteArticle } from '../utils/api';
 
-export function useDeleteMutation(slug: string) {
+export function useDeleteArticleMutation(slug: string) {
   const { user } = useAuth();
   const { push } = useRouter();
 

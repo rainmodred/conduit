@@ -156,11 +156,12 @@ export const articleHandlers = [
     }
   }),
 
-  rest.delete(`${API_URL}/articles/:slug`, (req, res, ctx) => {
+  rest.delete(`${API_URL}/articles/:slug`, (req, _res, ctx) => {
     try {
       const { slug } = req.params as { slug: string };
       requireAuth(req);
       db.article.delete({ where: { slug: { equals: slug } } });
+      persistDb('article');
       return delayedResponse(ctx.status(204));
     } catch (error) {
       return delayedResponse(
@@ -205,6 +206,7 @@ export const articleHandlers = [
         },
       });
 
+      persistDb('article');
       return delayedResponse(ctx.status(204));
 
       // 422?
@@ -230,6 +232,24 @@ export const articleHandlers = [
       ctx.json({ comments: sanitizedComments }),
     );
   }),
+
+  rest.delete(
+    `${API_URL}/articles/:slug/comments/:commentId`,
+    (req, _res, ctx) => {
+      try {
+        const { commentId } = req.params as { commentId: string };
+        requireAuth(req);
+        db.comment.delete({ where: { id: { equals: commentId } } });
+        persistDb('comment');
+        return delayedResponse(ctx.status(204));
+      } catch (error) {
+        return delayedResponse(
+          ctx.status(422),
+          ctx.json({ errors: { comment: ['not found'] } }),
+        );
+      }
+    },
+  ),
 
   rest.get(`${API_URL}/tags`, (_req, _res, ctx) => {
     const tags = db.tag.getAll().map(({ name }) => name);

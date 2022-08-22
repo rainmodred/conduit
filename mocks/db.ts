@@ -49,7 +49,7 @@ function createDB() {
     },
 
     comment: {
-      id: primaryKey(Number),
+      id: primaryKey(String),
       createdAt: Date,
       updatedAt: Date,
       body: String,
@@ -110,6 +110,7 @@ export function createTag(overrides?: Overrides) {
 
 export function createArticle(overrides?: Overrides) {
   const tag = db.tag.create(buildTag());
+  //TODO: fix if use don't exists
   const author = overrides?.author
     ? db.user.findFirst({ where: { id: { equals: overrides.author.id } } })!
     : createUser();

@@ -1,8 +1,9 @@
 import { dehydrate, QueryClient, useQuery } from 'react-query';
 
 import ArticleControls from '../../components/Article/ArticleControls/ArticleControls';
+import CommentsList from '../../components/CommentsList/CommentsList';
 import useArticle from '../../hooks/useArticle';
-import { useDeleteMutation } from '../../hooks/useDeleteMutation';
+import { useDeleteArticleMutation } from '../../hooks/useDeleteArticleMutation';
 import useFavoriteMutation from '../../hooks/useFavoriteMutation';
 import useFollowMutation from '../../hooks/useFollowMutation';
 import { getArticle } from '../../utils/api';
@@ -12,7 +13,6 @@ import { Article as ArticleModel } from '../../utils/types';
 // TODO: add markdown suppport
 export default function Article(): JSX.Element {
   const { data, isLoading, isIdle, error } = useArticle();
-
   const {
     author,
     body,
@@ -28,7 +28,7 @@ export default function Article(): JSX.Element {
 
   const followMutation = useFollowMutation(slug, author);
   const favoriteMutation = useFavoriteMutation(slug, favorited);
-  const deleteMutation = useDeleteMutation(slug);
+  const deleteArticleMutation = useDeleteArticleMutation(slug);
 
   function handleFollowClick() {
     followMutation.mutate();
@@ -39,7 +39,7 @@ export default function Article(): JSX.Element {
   }
 
   function handleDeleteArticle() {
-    deleteMutation.mutate();
+    deleteArticleMutation.mutate();
   }
 
   if (isLoading || isIdle) {
@@ -53,7 +53,7 @@ export default function Article(): JSX.Element {
   const isDisabled =
     followMutation.isLoading ||
     favoriteMutation.isLoading ||
-    deleteMutation.isLoading;
+    deleteArticleMutation.isLoading;
 
   return (
     <div className="article-page">
@@ -131,53 +131,7 @@ export default function Article(): JSX.Element {
               </div>
             </form>
 
-            <div className="card">
-              <div className="card-block">
-                <p className="card-text">
-                  With supporting text below as a natural lead-in to additional
-                  content.
-                </p>
-              </div>
-              <div className="card-footer">
-                <a href="" className="comment-author">
-                  <img
-                    src="http://i.imgur.com/Qr71crq.jpg"
-                    className="comment-author-img"
-                  />
-                </a>
-                &nbsp;
-                <a href="" className="comment-author">
-                  Jacob Schmidt
-                </a>
-                <span className="date-posted">Dec 29th</span>
-              </div>
-            </div>
-
-            <div className="card">
-              <div className="card-block">
-                <p className="card-text">
-                  With supporting text below as a natural lead-in to additional
-                  content.
-                </p>
-              </div>
-              <div className="card-footer">
-                <a href="" className="comment-author">
-                  <img
-                    src="http://i.imgur.com/Qr71crq.jpg"
-                    className="comment-author-img"
-                  />
-                </a>
-                &nbsp;
-                <a href="" className="comment-author">
-                  Jacob Schmidt
-                </a>
-                <span className="date-posted">Dec 29th</span>
-                <span className="mod-options">
-                  <i className="ion-edit"></i>
-                  <i className="ion-trash-a"></i>
-                </span>
-              </div>
-            </div>
+            <CommentsList />
           </div>
         </div>
       </div>
