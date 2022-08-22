@@ -178,7 +178,14 @@ function createComment(
   return fetcher(`/articles/${slug}/comments`, { data: { comment }, token });
 }
 
-function deleteComment(slug: string, commentId: number, token: string) {
+function deleteComment(
+  slug: string | undefined,
+  commentId: string,
+  token: string,
+) {
+  if (!slug) {
+    return Promise.reject();
+  }
   return fetcher(`/articles/${slug}/comments/${commentId}`, {
     method: 'DELETE',
     token,
