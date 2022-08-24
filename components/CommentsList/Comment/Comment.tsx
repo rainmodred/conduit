@@ -16,7 +16,7 @@ export default function Comment({ id, body, author, createdAt }: CommentProps) {
     deleteCommentMutation.mutate();
   }
 
-  const isAuthor = user?.username === author.username;
+  const isAuthor = user?.username === author?.username;
 
   return (
     <div data-testid="comment" className="card">

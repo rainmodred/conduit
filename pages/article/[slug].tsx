@@ -1,7 +1,10 @@
+import Link from 'next/link';
 import { dehydrate, QueryClient, useQuery } from 'react-query';
+import AddCommentForm from '../../components/AddCommentForm/AddCommentForm';
 
 import ArticleControls from '../../components/Article/ArticleControls/ArticleControls';
 import CommentsList from '../../components/CommentsList/CommentsList';
+import { useAuth } from '../../context/AuthContext';
 import useArticle from '../../hooks/useArticle';
 import { useDeleteArticleMutation } from '../../hooks/useDeleteArticleMutation';
 import useFavoriteMutation from '../../hooks/useFavoriteMutation';
@@ -13,6 +16,7 @@ import { Article as ArticleModel } from '../../utils/types';
 // TODO: add markdown suppport
 export default function Article(): JSX.Element {
   const { data, isLoading, isIdle, error } = useArticle();
+  const { user } = useAuth();
   const {
     author,
     body,
@@ -114,23 +118,20 @@ export default function Article(): JSX.Element {
 
         <div className="row">
           <div className="col-xs-12 col-md-8 offset-md-2">
-            <form className="card comment-form">
-              <div className="card-block">
-                <textarea
-                  className="form-control"
-                  placeholder="Write a comment..."
-                  rows="3"
-                ></textarea>
-              </div>
-              <div className="card-footer">
-                <img
-                  src="http://i.imgur.com/Qr71crq.jpg"
-                  className="comment-author-img"
-                />
-                <button className="btn btn-sm btn-primary">Post Comment</button>
-              </div>
-            </form>
-
+            {user ? (
+              <AddCommentForm />
+            ) : (
+              <p>
+                <Link href="/login">
+                  <a> Sign in </a>
+                </Link>
+                or
+                <Link href="/register">
+                  <a> sign up </a>
+                </Link>
+                to add comments on this article.
+              </p>
+            )}
             <CommentsList />
           </div>
         </div>

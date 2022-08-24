@@ -170,7 +170,7 @@ function getComments(slug: string): Promise<Comment[]> {
   return fetcher(`/articles/${slug}/comments`).then(data => data.comments);
 }
 
-function createComment(
+function addComment(
   slug: string,
   comment: { body: string },
   token: string,
@@ -219,7 +219,7 @@ export {
   updateArticle,
   deleteArticle,
   getComments,
-  createComment,
+  addComment,
   deleteComment,
   favoriteArticle,
   unfavoriteArticle,

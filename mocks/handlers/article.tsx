@@ -11,6 +11,7 @@ import {
   sanitizeComment,
   sanitizeProfile,
 } from '../serverUtils';
+import { buildComment } from '../data-generators';
 
 export const articleHandlers = [
   rest.get(`${API_URL}/articles`, (req, res, ctx) => {
@@ -250,6 +251,41 @@ export const articleHandlers = [
       }
     },
   ),
+
+  rest.post(`${API_URL}/articles/:slug/comments`, async (req, _res, ctx) => {
+    try {
+      const user = requireAuth(req);
+      const { comment: commentData } = await req.json();
+
+      const { slug } = req.params as { slug: string };
+
+      const article = db.article.findFirst({
+        where: { slug: { equals: slug } },
+      });
+      if (!article) {
+        throw new Error('Article not found');
+      }
+
+      const comment = db.comment.create({
+        ...buildComment({
+          body: commentData.body,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }),
+        author: user,
+        article,
+      });
+
+      persistDb('comment');
+
+      return delayedResponse(
+        ctx.status(200),
+        ctx.json(sanitizeComment(comment)),
+      );
+    } catch (error) {
+      return delayedResponse(ctx.status(401));
+    }
+  }),
 
   rest.get(`${API_URL}/tags`, (_req, _res, ctx) => {
     const tags = db.tag.getAll().map(({ name }) => name);
