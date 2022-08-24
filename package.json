@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "cross-env NEXT_PUBLIC_API_MOCKING='disabled' next dev",
     "dev:mock": "cross-env NEXT_PUBLIC_API_MOCKING='enabled' next dev",
-    "build": "next build",
+    "build": "cross-env NEXT_PUBLIC_API_MOCKING='disabled' next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest --watch"
