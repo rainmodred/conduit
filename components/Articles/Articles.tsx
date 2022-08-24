@@ -1,6 +1,5 @@
 import ArticlePreview from './ArticlePreview/ArticlePreview';
 import { Article } from '../../utils/types';
-import { formatDate } from '../../utils/utils';
 
 interface ArticleProps {
   articles: Article[] | undefined;
@@ -44,7 +43,7 @@ export default function Articles({
                 author={author}
                 favorited={favorited}
                 favoritesCount={favoritesCount}
-                createdAt={formatDate(updatedAt)}
+                createdAt={updatedAt}
                 title={title}
                 description={description}
                 tagList={tagList}

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { dehydrate, QueryClient, useQuery } from 'react-query';
+import { dehydrate, QueryClient } from 'react-query';
 import AddCommentForm from '../../components/AddCommentForm/AddCommentForm';
 import ReactMarkdown from 'react-markdown';
 
@@ -13,22 +13,11 @@ import useFollowMutation from '../../hooks/useFollowMutation';
 import { getArticle } from '../../utils/api';
 import { Article as ArticleModel } from '../../utils/types';
 
-// TODO: add skeleton loading
 export default function Article(): JSX.Element {
-  const { data, isLoading, isIdle, error } = useArticle();
+  const { data } = useArticle();
   const { user } = useAuth();
-  const {
-    author,
-    body,
-    createdAt,
-    description,
-    favorited,
-    favoritesCount,
-    slug,
-    tagList,
-    title,
-    updatedAt,
-  } = data ?? ({} as ArticleModel);
+  const { author, body, createdAt, favorited, favoritesCount, slug, title } =
+    data ?? ({} as ArticleModel);
 
   const followMutation = useFollowMutation(slug, author);
   const favoriteMutation = useFavoriteMutation(slug, favorited);
@@ -46,14 +35,6 @@ export default function Article(): JSX.Element {
     deleteArticleMutation.mutate();
   }
 
-  if (isLoading || isIdle) {
-    return <p>Loading...</p>;
-  }
-
-  if (error) {
-    console.error('TODO: article not found');
-  }
-
   const isDisabled =
     followMutation.isLoading ||
     favoriteMutation.isLoading ||
@@ -69,15 +50,15 @@ export default function Article(): JSX.Element {
             slug={slug}
             isDisabled={isDisabled}
             isFavorited={favorited}
-            isFollowing={author.following}
+            isFollowing={author?.following}
             onDelete={handleDeleteArticle}
             onFavorite={handleFavoriteClick}
             onFollow={handleFollowClick}
             author={{
-              username: author.username,
-              bio: author.bio,
+              username: author?.username,
+              bio: author?.bio,
               following: false,
-              image: author.image,
+              image: author?.image,
             }}
             createdAt={createdAt}
             favoritesCount={favoritesCount}
@@ -101,15 +82,15 @@ export default function Article(): JSX.Element {
             slug={slug}
             isDisabled={isDisabled}
             isFavorited={favorited}
-            isFollowing={author.following}
+            isFollowing={author?.following}
             onDelete={handleDeleteArticle}
             onFavorite={handleFavoriteClick}
             onFollow={handleFollowClick}
             author={{
-              username: author.username,
-              bio: author.bio,
+              username: author?.username,
+              bio: author?.bio,
               following: false,
-              image: author.image,
+              image: author?.image,
             }}
             createdAt={createdAt}
             favoritesCount={favoritesCount}
@@ -148,8 +129,10 @@ export async function getServerSideProps({
   const queryClient = new QueryClient();
   const { slug } = params;
 
-  await queryClient.prefetchQuery(['article', slug], () =>
-    getArticle(slug as string),
+  await queryClient.prefetchQuery(
+    ['article', slug],
+    () => getArticle(slug as string),
+    { staleTime: 1000 * 60 * 5 },
   );
 
   return {

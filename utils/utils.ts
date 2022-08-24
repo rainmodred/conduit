@@ -1,4 +1,4 @@
-import { AuthErrors, User } from './types';
+import { Article, AuthErrors, User, Comment } from './types';
 
 // function setToStorage<T>(key: string, value: T): void {
 //   window.localStorage.setItem(key, JSON.stringify(value));
@@ -56,10 +56,28 @@ function formatAuthErrors(
   }, {});
 }
 
+function transformArticle(article: Article): Article {
+  return {
+    ...article,
+    createdAt: formatDate(article.createdAt),
+    updatedAt: formatDate(article.updatedAt),
+  };
+}
+
+function transformComment(comment: Comment): Comment {
+  return {
+    ...comment,
+    createdAt: formatDate(comment.createdAt),
+    updatedAt: formatDate(comment.updatedAt),
+  };
+}
+
 export {
   saveCredentials,
   getCredentials,
   formatDate,
   deleteCredentials,
   formatAuthErrors,
+  transformArticle,
+  transformComment,
 };

@@ -1,5 +1,5 @@
-import useComments from '../../hooks/useComments';
 import Comment from './Comment/Comment';
+import useComments from '../../hooks/useComments';
 
 export default function CommentsList() {
   const { data: comments, isLoading } = useComments();

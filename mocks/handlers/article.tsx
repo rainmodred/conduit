@@ -280,7 +280,7 @@ export const articleHandlers = [
 
       return delayedResponse(
         ctx.status(200),
-        ctx.json(sanitizeComment(comment)),
+        ctx.json({ comment: sanitizeComment(comment) }),
       );
     } catch (error) {
       return delayedResponse(ctx.status(401));

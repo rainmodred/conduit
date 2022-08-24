@@ -7,8 +7,9 @@ import {
   User,
   Comment,
 } from './types';
+import { formatDate, transformArticle, transformComment } from './utils';
 
-async function fetcher(
+async function fetcher<T>(
   endpoint: string,
   {
     data,
@@ -16,7 +17,7 @@ async function fetcher(
     headers: customHeaders,
     ...customConfig
   }: { data?: unknown; token?: string } & RequestInit = {},
-) {
+): Promise<T> {
   const config: RequestInit = {
     method: data ? 'POST' : 'GET',
     body: data ? JSON.stringify(data) : undefined,
@@ -107,7 +108,12 @@ function getArticles(
     offset,
   }).toString();
 
-  return fetcher(`/articles?${searchParams}`, { token });
+  return fetcher<ArticlesFromAPi>(`/articles?${searchParams}`, {
+    token,
+  }).then(data => ({
+    articles: data.articles.map(transformArticle),
+    articlesCount: data.articlesCount,
+  }));
 }
 
 function getFeed(page = 1, token?: string, params?: Record<string, string>) {
@@ -147,7 +153,9 @@ function createArticle(article: ArticleToCreate, token: string) {
 }
 
 function getArticle(slug: string, token?: string): Promise<Article> {
-  return fetcher(`/articles/${slug}`, { token }).then(data => data.article);
+  return fetcher<{ article: Article }>(`/articles/${slug}`, { token }).then(
+    data => transformArticle(data.article),
+  );
 }
 
 function updateArticle(
@@ -167,15 +175,20 @@ function deleteArticle(slug: string, token: string): Promise<unknown> {
 }
 
 function getComments(slug: string): Promise<Comment[]> {
-  return fetcher(`/articles/${slug}/comments`).then(data => data.comments);
+  return fetcher<{ comments: Comment[] }>(`/articles/${slug}/comments`).then(
+    data => data.comments.map(transformComment),
+  );
 }
 
 function addComment(
   slug: string,
   comment: { body: string },
   token: string,
-): Promise<{ comment: Comment }> {
-  return fetcher(`/articles/${slug}/comments`, { data: { comment }, token });
+): Promise<Comment> {
+  return fetcher<{ comment: Comment }>(`/articles/${slug}/comments`, {
+    data: { comment },
+    token,
+  }).then(data => transformComment(data.comment));
 }
 
 function deleteComment(
