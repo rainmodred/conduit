@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { dehydrate, QueryClient, useQuery } from 'react-query';
 import AddCommentForm from '../../components/AddCommentForm/AddCommentForm';
+import ReactMarkdown from 'react-markdown';
 
 import ArticleControls from '../../components/Article/ArticleControls/ArticleControls';
 import CommentsList from '../../components/CommentsList/CommentsList';
@@ -13,7 +14,6 @@ import { getArticle } from '../../utils/api';
 import { Article as ArticleModel } from '../../utils/types';
 
 // TODO: add skeleton loading
-// TODO: add markdown suppport
 export default function Article(): JSX.Element {
   const { data, isLoading, isIdle, error } = useArticle();
   const { user } = useAuth();
@@ -88,7 +88,7 @@ export default function Article(): JSX.Element {
       <div className="container page">
         <div className="row article-content">
           <div className="col-md-12">
-            <p>{body}</p>
+            <ReactMarkdown>{body}</ReactMarkdown>
             <h2 id="introducing-ionic">Introducing RealWorld.</h2>
             <p>It's a great solution for learning how other frameworks work.</p>
           </div>
