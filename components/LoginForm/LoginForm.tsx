@@ -48,12 +48,14 @@ export default function LoginForm(): JSX.Element {
       {({ register }) => (
         <>
           <InputField
+            size="lg"
             disabled={isFormDisabled}
             label="Email"
             registration={register('email')}
             type="email"
           />
           <InputField
+            size="lg"
             disabled={isFormDisabled}
             label="Password"
             registration={register('password')}

@@ -1,6 +1,7 @@
 import { UseFormRegisterReturn } from 'react-hook-form';
 
 interface InputFieldProps {
+  size?: 'md' | 'lg';
   type?: 'text' | 'email' | 'password';
   label: string;
   placeholder?: string;
@@ -9,6 +10,7 @@ interface InputFieldProps {
 }
 
 export default function InputField({
+  size = 'md',
   type = 'text',
   label,
   placeholder,
@@ -22,7 +24,7 @@ export default function InputField({
       </label>
       <input
         {...registration}
-        className="form-control form-control-lg"
+        className={`form-control ${size === 'lg' && 'form-control-lg'}`}
         type={type}
         placeholder={placeholder ? placeholder : label}
         id={`input-${label}`}

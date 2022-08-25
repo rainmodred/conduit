@@ -43,6 +43,7 @@ export default function CreateArticleForm() {
       {({ register }) => (
         <>
           <InputField
+            size="lg"
             disabled={isFormDisabled}
             label="title"
             registration={register('title')}
