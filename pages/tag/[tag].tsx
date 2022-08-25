@@ -1,33 +1,29 @@
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import { useQuery } from 'react-query';
-import { getArticles } from '../../api';
-import Articles from '../../components/Articles';
+import { dehydrate, QueryClient, useQuery } from 'react-query';
+
+import Articles from '../../components/Articles/Articles';
 import FeedNavigation from '../../components/FeedNavigation';
-import Pagination from '../../components/Pagination/Pagination';
+import Pagination from '../../components/Shared/Pagination/Pagination';
 import Tags from '../../components/Tags/Tags';
-import { itemsPerPage } from '../../constants';
-import { ArticlesFromAPi } from '../../types';
+import { getArticles } from '../../utils/api';
+import { ARTICLES_LIMIT } from '../../config/config';
 
-interface TagProps {
-  articlesData: ArticlesFromAPi;
-}
-
-export default function Tag({ articlesData }: TagProps): JSX.Element {
+// TODO: Add Main component
+export default function Tag(): JSX.Element {
   const { isReady, query } = useRouter();
 
   const page = Number(query?.page) || 1;
   const { data, isLoading, isIdle, isError, isSuccess } = useQuery(
     ['articles', `${query?.tag}`, page],
-    () => getArticles(page, null, { tag: query?.tag as string }),
-    { enabled: isReady && Boolean(query?.tag), initialData: articlesData },
+    () => getArticles(page, undefined, { tag: query?.tag as string }),
+    { enabled: isReady && Boolean(query?.tag) },
   );
 
   let totalPages = 0;
   if (isSuccess) {
-    totalPages = Math.ceil(data?.articlesCount / itemsPerPage);
+    totalPages = Math.ceil(data?.articlesCount / ARTICLES_LIMIT);
   }
-
   return (
     <div className="home-page">
       <div className="banner">
@@ -57,12 +53,17 @@ export default function Tag({ articlesData }: TagProps): JSX.Element {
   );
 }
 
-export const getServerSideProps: GetServerSideProps<
-  TagProps
-> = async context => {
-  const page = parseInt(context.query?.page as string) || 1;
-  const articlesData = await getArticles(page, {
-    tag: context.query?.tag as string,
-  });
-  return { props: { articlesData } };
+export const getServerSideProps: GetServerSideProps = async context => {
+  const page = parseInt(context.query.page as string) || 1;
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery(['articles', 'tag', page], () =>
+    getArticles(page, undefined, { tag: context.query?.tag }),
+  );
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+    },
+  };
 };

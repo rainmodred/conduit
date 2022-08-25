@@ -1,15 +1,25 @@
-import { render, renderWithAuthProvider, screen } from '../../test-utils';
-import { mockUser } from '../../mocks/mock';
+import { render, renderWithAuthProvider, screen } from '../../test/test-utils';
+
 import Home from '../../pages/index';
 import { waitForElementToBeRemoved } from '@testing-library/react';
-import { rest } from 'msw';
-import { apiUrl } from '../../api';
-import { server } from '../../mocks/server';
 import { AuthProvider } from '../../context/AuthContext';
+import { authenticate } from '../../mocks/serverUtils';
+import { createArticle, createUser } from '../../mocks/db';
 
 describe('Home page', () => {
   it('should show feed', async () => {
-    render(renderWithAuthProvider(<Home />, mockUser));
+    const follower = createUser();
+    const author = createUser({ followedBy: [follower] });
+
+    const articles = Array.from({ length: 3 }).map(() =>
+      createArticle({ author }),
+    );
+
+    const { user } = authenticate({
+      email: follower.email,
+      password: follower.password,
+    });
+    render(renderWithAuthProvider(<Home />, user));
 
     await waitForElementToBeRemoved(() =>
       screen.getByText(/loading articles/i),
@@ -20,64 +30,15 @@ describe('Home page', () => {
         name: /your feed/i,
       }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', {
-        name: /feed article/i,
-      }),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', {
-        name: /create a new implementation/i,
-      }),
-    ).not.toBeInTheDocument();
-  });
 
-  it('should show error articles count = 0', async () => {
-    server.use(
-      rest.get(`${apiUrl}/articles/feed`, (_req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.json({
-            articles: [],
-            articlesCount: 0,
-          }),
-        );
-      }),
-    );
-
-    render(renderWithAuthProvider(<Home />, mockUser));
-    await waitForElementToBeRemoved(() =>
-      screen.getByText(/loading articles/i),
-    );
-    expect(
-      screen.getByText(/no articles are here\.\.\. yet\./i),
-    ).toBeInTheDocument();
-  });
-
-  it.skip('should filter articles by tag', async () => {
-    render(renderWithAuthProvider(<Home />), {
-      router: { query: { tag: 'welcome' } },
+    articles.forEach(({ title, description }) => {
+      expect(
+        screen.getByRole('heading', {
+          name: title,
+        }),
+      ).toBeInTheDocument();
+      expect(screen.getByText(description)).toBeInTheDocument();
     });
-
-    await waitForElementToBeRemoved(() =>
-      screen.getByText(/loading articles/i),
-    );
-
-    expect(
-      screen.getByRole('heading', {
-        name: /welcome to realworld project/i,
-      }),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', {
-        name: /create a new implementation/i,
-      }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', {
-        name: /explore implementations/i,
-      }),
-    ).not.toBeInTheDocument();
   });
 
   it('should redirect to all if user is not logged in', async () => {
@@ -92,33 +53,5 @@ describe('Home page', () => {
     );
 
     expect(push).toBeCalledWith({ pathname: '/all' });
-  });
-
-  it.skip('should redirect to feed if user logged in', () => {
-    const push = jest.fn();
-    render(renderWithAuthProvider(<Home />, mockUser), { router: { push } });
-
-    expect(push).toBeCalledWith({ query: { feed: 'user' } });
-  });
-
-  it.skip('should logout on 401', async () => {
-    server.use(
-      rest.get(`${apiUrl}/articles/feed`, (_req, res, ctx) => {
-        return res(
-          ctx.status(401),
-          ctx.json({
-            status: 'error',
-            message: 'missing authorization credentials',
-          }),
-        );
-      }),
-    );
-
-    render(renderWithAuthProvider(<Home />, mockUser));
-    await waitForElementToBeRemoved(() =>
-      screen.getByText(/loading articles/i),
-    );
-
-    expect(screen.getByRole('link', { name: /sign in/i })).toBeInTheDocument();
   });
 });

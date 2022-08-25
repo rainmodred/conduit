@@ -1,6 +1,10 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { User } from '../types';
-import { saveCredentials, getCredentials, deleteCredentials } from '../utils';
+import { User } from '../utils/types';
+import {
+  saveCredentials,
+  getCredentials,
+  deleteCredentials,
+} from '../utils/utils';
 
 interface AuthContextType {
   user: User | null | undefined;

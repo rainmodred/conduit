@@ -1,8 +1,8 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
 import NavLink from '../NavLink';
+import Avatar from '../Shared/Avatar/Avatar';
 
 type Route = {
   title: string;
@@ -39,14 +39,13 @@ export default function Header(): JSX.Element {
           <li className="nav-item">
             <NavLink isActive={pathname === profilePath} href={profilePath}>
               <div style={{ display: 'flex', gap: '5px' }}>
-                <Image
+                <Avatar
                   className="user-pic"
                   src={user.image}
                   alt="profile avatar"
                   height="26"
                   width="26"
                 />
-
                 {user.username}
               </div>
             </NavLink>

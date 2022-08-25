@@ -4,15 +4,12 @@ import {
   renderWithAuthProvider,
   screen,
   waitFor,
-} from '../../test-utils';
-import { mockUser } from '../../mocks/mock';
-import Register from '../../pages/register';
+} from '../../test/test-utils';
 
-const testUser = {
-  email: 'test@example.com',
-  username: 'test',
-  password: 'test',
-};
+import Register from '../../pages/register';
+import { createUser } from '../../mocks/db';
+import { buildUser } from '../../mocks/data-generators';
+import { authenticate } from '../../mocks/serverUtils';
 
 describe('register page', () => {
   it('should render', () => {
@@ -28,120 +25,25 @@ describe('register page', () => {
     expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
   });
 
-  it('should show missing password error', async () => {
+  it('should have link to register page', async () => {
     render(renderWithAuthProvider(<Register />));
-    const user = userEvent.setup();
-
-    await user.type(screen.getByPlaceholderText(/email/i), testUser.email);
-
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: /sign up/i,
-      }),
-    );
-
-    expect(screen.getByText('password is required')).toBeInTheDocument();
-  });
-
-  it('should show missing email error', async () => {
-    render(renderWithAuthProvider(<Register />));
-    const user = userEvent.setup();
-
-    await user.type(
-      screen.getByPlaceholderText(/password/i),
-      testUser.password,
-    );
-
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: /sign up/i,
-      }),
-    );
-
-    expect(screen.getByText('email is required')).toBeInTheDocument();
-  });
-
-  it('should show missing username error', async () => {
-    render(renderWithAuthProvider(<Register />));
-    const user = userEvent.setup();
-
-    await user.type(screen.getByPlaceholderText(/email/i), testUser.email);
-    await user.type(
-      screen.getByPlaceholderText(/password/i),
-      testUser.password,
-    );
-
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: /sign up/i,
-      }),
-    );
-
-    expect(screen.getByText('username is required')).toBeInTheDocument();
-  });
-
-  it('should show error if username has been taken', async () => {
-    render(renderWithAuthProvider(<Register />));
-    const user = userEvent.setup();
-
-    await user.type(screen.getByPlaceholderText(/username/i), 'error');
-    await user.type(screen.getByPlaceholderText(/email/i), testUser.email);
-    await user.type(
-      screen.getByPlaceholderText(/password/i),
-      testUser.password,
-    );
-
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: /sign up/i,
-      }),
-    );
 
     expect(
-      await screen.findByText('username has already been taken'),
-    ).toBeInTheDocument();
-  });
-
-  it('should show error if email has been taken', async () => {
-    render(renderWithAuthProvider(<Register />));
-    const user = userEvent.setup();
-
-    await user.type(
-      screen.getByPlaceholderText(/username/i),
-      testUser.username,
-    );
-    await user.type(screen.getByPlaceholderText(/email/i), 'error@example.com');
-    await user.type(
-      screen.getByPlaceholderText(/password/i),
-      testUser.password,
-    );
-
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: /sign up/i,
+      screen.getByRole('link', {
+        name: 'Have an account?',
       }),
-    );
-
-    expect(
-      await screen.findByText('email has already been taken'),
-    ).toBeInTheDocument();
+    ).toHaveAttribute('href', '/login');
   });
 
-  it('should redirect on register', async () => {
+  it('should redirect onRegister', async () => {
     const push = jest.fn();
     render(renderWithAuthProvider(<Register />), { router: { push } });
     const user = userEvent.setup();
+    const { username, email, password } = buildUser();
 
-    await user.type(
-      screen.getByPlaceholderText(/username/i),
-      testUser.username,
-    );
-    await user.type(screen.getByPlaceholderText(/email/i), testUser.email);
-    await user.type(
-      screen.getByPlaceholderText(/password/i),
-      testUser.password,
-    );
-
+    await user.type(screen.getByPlaceholderText(/username/i), username);
+    await user.type(screen.getByPlaceholderText(/email/i), email);
+    await user.type(screen.getByPlaceholderText(/password/i), password);
     await userEvent.click(
       screen.getByRole('button', {
         name: /sign up/i,
@@ -151,9 +53,15 @@ describe('register page', () => {
     await waitFor(() => expect(push).toBeCalledWith('/'));
   });
 
-  it('should redirect if user already logged in', () => {
+  it('should redirect to "/" if user already logged in', () => {
     const push = jest.fn();
-    render(renderWithAuthProvider(<Register />, mockUser), {
+    const { email, password } = createUser();
+    const { user } = authenticate({
+      email: email,
+      password: password,
+    });
+
+    render(renderWithAuthProvider(<Register />, user), {
       router: { pathname: '/', push },
     });
 

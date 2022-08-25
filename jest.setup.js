@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/extend-expect';
+import { resetDb } from './mocks/db';
 // src/setupTests.js
 import { server } from './mocks/server';
 // Establish API mocking before all tests.
@@ -10,3 +11,7 @@ afterEach(() => server.resetHandlers());
 
 // Clean up after the tests are finished.
 afterAll(() => server.close());
+
+afterEach(async () => {
+  resetDb();
+});
