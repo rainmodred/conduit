@@ -3,6 +3,7 @@ import { UseFormRegisterReturn } from 'react-hook-form';
 interface InputFieldProps {
   type?: 'text' | 'email' | 'password';
   label: string;
+  placeholder?: string;
   disabled?: boolean;
   registration: UseFormRegisterReturn;
 }
@@ -10,6 +11,7 @@ interface InputFieldProps {
 export default function InputField({
   type,
   label,
+  placeholder,
   disabled = false,
   registration,
 }: InputFieldProps): JSX.Element {
@@ -22,7 +24,7 @@ export default function InputField({
         {...registration}
         className="form-control form-control-lg"
         type={type}
-        placeholder={label}
+        placeholder={placeholder ? placeholder : label}
         id={`input-${label}`}
       />
     </fieldset>

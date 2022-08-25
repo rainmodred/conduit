@@ -35,12 +35,10 @@ interface User {
   image: string;
 }
 
-interface ArticleToCreate {
-  title: string;
-  description: string;
-  body: string;
-  taglist: string[];
-}
+type ArticleToCreate = Pick<
+  Article,
+  'title' | 'description' | 'body' | 'tagList'
+>;
 
 interface Comment {
   id: string;
