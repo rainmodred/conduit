@@ -11,7 +11,7 @@ import {
   sanitizeComment,
   sanitizeProfile,
 } from '../serverUtils';
-import { buildComment } from '../data-generators';
+import { buildArticle, buildComment, buildTag } from '../data-generators';
 
 export const articleHandlers = [
   rest.get(`${API_URL}/articles`, (req, res, ctx) => {
@@ -60,6 +60,45 @@ export const articleHandlers = [
       ctx.status(200),
       ctx.json({ articles: sanitizedArticles, articlesCount }),
     );
+  }),
+
+  rest.post(`${API_URL}/articles/`, async (req, _res, ctx) => {
+    try {
+      const user = requireAuth(req);
+      const { article: articleData } = await req.json();
+
+      const tagList = articleData.tagList.map(tagName => {
+        const existingTag = db.tag.findFirst({
+          where: { name: { equals: tagName } },
+        });
+        if (!existingTag) {
+          return db.tag.create(buildTag({ name: tagName }));
+        }
+        return existingTag;
+      });
+
+      const article = db.article.create({
+        ...buildArticle({
+          slug: articleData.title,
+          body: articleData.body,
+          description: articleData.description,
+          title: articleData.title,
+        }),
+        author: user,
+        tagList,
+      });
+
+      persistDb('article');
+
+      return delayedResponse(
+        ctx.status(200),
+        ctx.json({ article: sanitizeArticle(article) }),
+      );
+    } catch (error) {
+      console.log('error', error);
+
+      return delayedResponse(ctx.status(404));
+    }
   }),
 
   rest.get(`${API_URL}/articles/feed`, (req, _res, ctx) => {

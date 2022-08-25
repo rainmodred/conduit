@@ -32,6 +32,7 @@ export default function Header(): JSX.Element {
           {protectedRoutes.map(({ title, path }) => (
             <li className="nav-item" key={title}>
               <NavLink isActive={pathname === path} href={path}>
+                {path === '/editor' && <i className="ion-compose"></i>}
                 {title}
               </NavLink>
             </li>

@@ -148,8 +148,15 @@ function unFollowUser(username: string, token: string) {
   return fetcher(`/profiles/${username}/follow`, { method: 'DELETE', token });
 }
 
-function createArticle(article: ArticleToCreate, token: string) {
-  return fetcher('/articles', { data: { article }, token });
+function createArticle(
+  article: ArticleToCreate,
+  token: string,
+): Promise<Article> {
+  return fetcher<{ article: Article }>('/articles/', {
+    data: { article },
+    token,
+    method: 'POST',
+  }).then(data => transformArticle(data.article));
 }
 
 function getArticle(slug: string, token?: string): Promise<Article> {
