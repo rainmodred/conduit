@@ -70,8 +70,6 @@ export default function Article(): JSX.Element {
         <div className="row article-content">
           <div className="col-md-12">
             <ReactMarkdown>{body}</ReactMarkdown>
-            <h2 id="introducing-ionic">Introducing RealWorld.</h2>
-            <p>It's a great solution for learning how other frameworks work.</p>
           </div>
         </div>
 
