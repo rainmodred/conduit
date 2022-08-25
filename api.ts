@@ -1,4 +1,10 @@
-import { Article, ArticlesFromAPi, User } from './types';
+import {
+  Article,
+  ArticlesFromAPi,
+  ArticleToCreate,
+  Profile,
+  User,
+} from './types';
 
 const apiUrl = 'https://api.realworld.io/api';
 
@@ -11,8 +17,6 @@ async function fetcher(
     ...customConfig
   }: { data?: unknown; token?: string } & RequestInit = {},
 ) {
-  const headers = {};
-
   const config: RequestInit = {
     method: data ? 'POST' : 'GET',
     body: data ? JSON.stringify(data) : undefined,
@@ -25,7 +29,7 @@ async function fetcher(
   };
 
   try {
-    const response = await fetch(`${apiUrl}/${endpoint}`, config);
+    const response = await fetch(`${apiUrl}${endpoint}`, config);
 
     if (response.status === 401) {
       window.localStorage.removeItem('auth');
@@ -59,7 +63,7 @@ function signUp(
       password,
     },
   };
-  return fetcher('users', { data });
+  return fetcher('/users', { data });
 }
 
 function signIn(email: string, password: string): Promise<{ user: User }> {
@@ -70,11 +74,15 @@ function signIn(email: string, password: string): Promise<{ user: User }> {
     },
   };
 
-  return fetcher('users/login', { data });
+  return fetcher('/users/login', { data });
+}
+
+function updateUser(user: User): Promise<{ user: User }> {
+  return fetcher('/user', { data: { user }, method: 'PUT' });
 }
 
 function getTags(): Promise<{ tags: string[] }> {
-  return fetcher('tags');
+  return fetcher('/tags');
 }
 
 function getArticles(
@@ -96,10 +104,101 @@ function getArticles(
   }).toString();
 
   if (token) {
-    return fetcher(`articles/feed?${searchParams}`, { token });
+    return fetcher(`/articles/feed?${searchParams}`, { token });
   }
 
-  return fetcher(`articles?${searchParams}`);
+  return fetcher(`/articles?${searchParams}`);
 }
 
-export { apiUrl, signUp, signIn, getTags, getArticles };
+function getProfile(username: string): Promise<{ profile: Profile }> {
+  return fetcher(`/profile/${username}`);
+}
+
+function followUser(
+  username: string,
+  token: string,
+): Promise<{ profile: Profile }> {
+  return fetcher(`/profile/${username}/follow`, { method: 'POST', token });
+}
+
+function unFollowUser(username: string, token: string) {
+  return fetcher(`/profile/${username}/follow`, { method: 'DELETE', token });
+}
+
+function createArticle(article: ArticleToCreate, token: string) {
+  return fetcher('/articles', { data: { article }, token });
+}
+
+function getArticle(slug: string): Promise<{ article: Article }> {
+  return fetcher(`/articles/${slug}`);
+}
+
+function updateArticle(
+  slug: string,
+  article: ArticleToCreate,
+  token: string,
+): Promise<{ article: Article }> {
+  return fetcher(`/articles/${slug}`, {
+    method: 'PUT',
+    data: { article },
+    token,
+  });
+}
+
+function deleteArticle(slug: string, token: string): Promise<unknown> {
+  return fetcher(`/articles/${slug}`, { method: 'DELETE', token });
+}
+
+function getComments(
+  slug: string,
+  token?: string,
+): Promise<{ comments: Comment[] }> {
+  return fetcher(`/articles/${slug}/comments`, { token });
+}
+
+function createComment(
+  slug: string,
+  comment: { body: string },
+  token: string,
+): Promise<{ comment: Comment }> {
+  return fetcher(`/articles/${slug}/comments`, { data: { comment }, token });
+}
+
+function deleteComment(slug: string, commentId: number, token: string) {
+  return fetcher(`/articles/${slug}/comments/${commentId}`, {
+    method: 'DELETE',
+    token,
+  });
+}
+
+function favoriteArticle(
+  slug: string,
+  token: string,
+): Promise<{ article: Article }> {
+  return fetcher(`/articles/${slug}/favorite`, { token });
+}
+
+function unfavoriteArticle(slug: string, token: string) {
+  return fetcher(`/articles/${slug}/favorite`, { method: 'DELETE', token });
+}
+
+export {
+  apiUrl,
+  signUp,
+  signIn,
+  updateUser,
+  getTags,
+  getArticles,
+  getProfile,
+  followUser,
+  unFollowUser,
+  createArticle,
+  getArticle,
+  updateArticle,
+  deleteArticle,
+  getComments,
+  createComment,
+  deleteComment,
+  favoriteArticle,
+  unfavoriteArticle,
+};

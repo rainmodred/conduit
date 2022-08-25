@@ -1,11 +1,11 @@
 import userEvent from '@testing-library/user-event';
 import {
-  mockUser,
   render,
   renderWithAuthProvider,
   screen,
   waitFor,
 } from '../../test-utils';
+import { mockUser } from '../../mocks/mock';
 import Register from '../../pages/register';
 
 const testUser = {

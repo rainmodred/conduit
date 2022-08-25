@@ -1,14 +1,11 @@
-import {
-  mockUser,
-  render,
-  renderWithAuthProvider,
-  screen,
-} from '../../test-utils';
+import { render, renderWithAuthProvider, screen } from '../../test-utils';
+import { mockUser } from '../../mocks/mock';
 import Home from '../../pages/index';
-import { waitFor, waitForElementToBeRemoved } from '@testing-library/react';
+import { waitForElementToBeRemoved } from '@testing-library/react';
 import { rest } from 'msw';
 import { apiUrl } from '../../api';
 import { server } from '../../mocks/server';
+import { AuthProvider } from '../../context/AuthContext';
 
 describe('Home page', () => {
   it('should show feed', async () => {
@@ -85,7 +82,14 @@ describe('Home page', () => {
 
   it('should redirect to all if user is not logged in', async () => {
     const push = jest.fn();
-    render(renderWithAuthProvider(<Home />), { router: { push } });
+    render(
+      renderWithAuthProvider(
+        <AuthProvider>
+          <Home />
+        </AuthProvider>,
+      ),
+      { router: { push } },
+    );
 
     expect(push).toBeCalledWith({ pathname: '/all' });
   });

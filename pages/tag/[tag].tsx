@@ -5,7 +5,7 @@ import { getArticles } from '../../api';
 import Articles from '../../components/Articles';
 import FeedNavigation from '../../components/FeedNavigation';
 import Pagination from '../../components/Pagination/Pagination';
-import Tags from '../../components/Tags';
+import Tags from '../../components/Tags/Tags';
 import { itemsPerPage } from '../../constants';
 import { ArticlesFromAPi } from '../../types';
 

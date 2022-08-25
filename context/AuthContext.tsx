@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '../types';
-import { getFromStorage, setToStorage } from '../utils';
+import { saveCredentials, getCredentials, deleteCredentials } from '../utils';
 
 interface AuthContextType {
-  user: User | null;
+  user: User | null | undefined;
   setUser: (value: User | null) => void;
   logout: () => void;
 }
@@ -14,24 +14,22 @@ interface AuthProviderProps {
 }
 
 function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null | undefined>(null);
 
   useEffect(() => {
-    const user = getFromStorage('auth');
-    if (user) {
-      setUser(user as User);
-    }
+    const user = getCredentials();
+    setUser(user);
   }, []);
 
   useEffect(() => {
     if (user) {
-      setToStorage('auth', user);
+      saveCredentials(user);
     }
   }, [user]);
 
   function logout() {
     setUser(null);
-    window.localStorage.removeItem('auth');
+    deleteCredentials();
   }
 
   return (

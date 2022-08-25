@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import ArticlePreview from './ArticlePreview';
 import { Article } from '../types';
 
@@ -28,7 +27,7 @@ export default function Articles({
   }
 
   if (isError) {
-    return <div className="article-preview">TODO...</div>;
+    return <div className="article-preview">Something went wrong</div>;
   }
 
   return (
