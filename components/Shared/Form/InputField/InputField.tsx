@@ -8,7 +8,7 @@ interface InputFieldProps {
 }
 
 export default function InputField({
-  type,
+  type = 'text',
   label,
   disabled = false,
   registration,

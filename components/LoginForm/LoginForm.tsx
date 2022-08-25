@@ -51,11 +51,13 @@ export default function LoginForm(): JSX.Element {
             disabled={isFormDisabled}
             label="Email"
             registration={register('email')}
+            type="email"
           />
           <InputField
             disabled={isFormDisabled}
             label="Password"
             registration={register('password')}
+            type="password"
           />
 
           <Button>Sign in</Button>
