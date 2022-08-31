@@ -29,7 +29,12 @@ describe('Home page', () => {
       screen.getByRole('link', {
         name: /your feed/i,
       }),
-    ).toBeInTheDocument();
+    ).toHaveAttribute('href', '/');
+    expect(
+      screen.getByRole('link', {
+        name: /global feed/i,
+      }),
+    ).toHaveAttribute('href', '/all');
 
     articles.forEach(({ title, description }) => {
       expect(
