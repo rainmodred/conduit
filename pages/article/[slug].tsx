@@ -19,12 +19,12 @@ export default function Article(): JSX.Element {
   const { author, body, createdAt, favorited, favoritesCount, slug, title } =
     data ?? ({} as ArticleModel);
 
-  const followMutation = useFollowMutation(slug, author);
+  const followMutation = useFollowMutation();
   const favoriteMutation = useFavoriteMutation(slug, favorited);
   const deleteArticleMutation = useDeleteArticleMutation(slug);
 
   function handleFollowClick() {
-    followMutation.mutate();
+    followMutation.mutate({ profile: author, slug });
   }
 
   function handleFavoriteClick() {
