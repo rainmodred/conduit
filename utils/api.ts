@@ -82,8 +82,13 @@ function signIn(email: string, password: string): Promise<{ user: User }> {
   return fetcher('/users/login', { data });
 }
 
-function updateUser(user: User): Promise<{ user: User }> {
-  return fetcher('/user', { data: { user }, method: 'PUT' });
+type UpdatedUser = Omit<User, 'token'> & { password: string };
+function updateUser(user: UpdatedUser, token: string): Promise<User> {
+  return fetcher<{ user: User }>('/user', {
+    data: { user },
+    method: 'PUT',
+    token,
+  }).then(data => data.user);
 }
 
 function getTags(): Promise<{ tags: string[] }> {

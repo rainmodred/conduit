@@ -7,6 +7,7 @@ import { FormattedAuthErrors } from '../../../utils/types';
 import { useEffect } from 'react';
 
 interface FormProps<TFormValues, Schema> {
+  defaultValues?: Partial<TFormValues>;
   authErrors?: FormattedAuthErrors;
   schema: Schema;
   children: (methods: UseFormReturn<TFormValues>) => React.ReactNode;
@@ -22,13 +23,17 @@ export default function Form<
     unknown
   >,
 >({
+  defaultValues,
   authErrors,
   schema,
   className,
   children,
   onSubmit,
 }: FormProps<TFormValues, Schema>): JSX.Element {
-  const methods = useForm<TFormValues>({ resolver: zodResolver(schema) });
+  const methods = useForm<TFormValues>({
+    resolver: zodResolver(schema),
+    defaultValues,
+  });
   const {
     handleSubmit,
     reset,
@@ -40,6 +45,10 @@ export default function Form<
       reset();
     }
   }, [isSubmitSuccessful, reset]);
+
+  useEffect(() => {
+    reset(defaultValues);
+  }, [reset, defaultValues]);
 
   return (
     <>
