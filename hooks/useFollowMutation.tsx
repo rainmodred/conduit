@@ -5,61 +5,87 @@ import { followUser, unFollowUser } from '../utils/api';
 import { QUERY_KEYS } from '../utils/queryKeys';
 import { Profile, Article } from '../utils/types';
 
-export default function useFollowMutation(slug: string, author: Profile) {
+export default function useFollowMutation() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   return useMutation(
-    () =>
-      author.following
-        ? unFollowUser(author.username, user?.token as string)
-        : followUser(author.username, user?.token as string),
+    ({ profile }: { profile: Profile; slug?: string }) =>
+      profile.following
+        ? unFollowUser(profile.username, user?.token as string)
+        : followUser(profile.username, user?.token as string),
     {
-      onMutate: async () => {
-        await queryClient.cancelQueries(QUERY_KEYS.articleDetail(slug));
-        const previousValue = queryClient.getQueryData<Article>(
-          QUERY_KEYS.articleDetail(slug),
-        );
-
-        if (previousValue) {
-          queryClient.setQueryData<Article>(QUERY_KEYS.articleDetail(slug), {
-            ...previousValue,
-            author: {
-              ...previousValue.author,
-              following: !previousValue.author.following,
-            },
-          });
-        }
-
-        return { previousValue };
-      },
-      onError: (err, variables, context) => {
-        if (context?.previousValue) {
-          queryClient.setQueryData<Article>(
+      onMutate: async ({ profile, slug }) => {
+        if (slug) {
+          await queryClient.cancelQueries(QUERY_KEYS.articleDetail(slug));
+          const previousValue = queryClient.getQueryData<Article>(
             QUERY_KEYS.articleDetail(slug),
-            context.previousValue,
+          );
+
+          if (previousValue) {
+            queryClient.setQueryData<Article>(QUERY_KEYS.articleDetail(slug), {
+              ...previousValue,
+              author: {
+                ...previousValue.author,
+                following: !previousValue.author.following,
+              },
+            });
+          }
+
+          return { previousValue };
+        } else {
+          await queryClient.cancelQueries(QUERY_KEYS.profile(profile.username));
+          const prevProfile = queryClient.getQueryData<Profile>(
+            QUERY_KEYS.profile(profile.username),
+          );
+
+          if (prevProfile) {
+            queryClient.setQueryData<Profile>(
+              QUERY_KEYS.profile(profile.username),
+              {
+                ...prevProfile,
+                following: !prevProfile.following,
+              },
+            );
+          }
+
+          return { prevProfile };
+        }
+      },
+      onError: (err, { profile, slug }, context) => {
+        if (context?.previousValue) {
+          if (slug) {
+            queryClient.setQueryData<Article>(
+              QUERY_KEYS.articleDetail(slug),
+              context.previousValue,
+            );
+          }
+        }
+        if (context?.prevProfile) {
+          queryClient.setQueryData<Profile>(
+            QUERY_KEYS.profile(profile.username),
+            context.prevProfile,
           );
         }
       },
 
-      onSuccess: data => {
-        queryClient.setQueryData<Article>(
-          QUERY_KEYS.articleDetail(slug),
-          oldData => {
-            return {
-              ...oldData,
-              author: { ...data.profile },
-            };
-          },
+      onSuccess: (data, { profile, slug }) => {
+        if (slug) {
+          queryClient.setQueryData<Article>(
+            QUERY_KEYS.articleDetail(slug),
+            oldData => {
+              return {
+                ...oldData,
+                author: { ...data },
+              };
+            },
+          );
+        }
+        queryClient.setQueryData<Profile>(
+          QUERY_KEYS.profile(profile.username),
+          data,
         );
 
-        // queryClient.setQueryData<Article>(['article', 'feed', 1], oldData =>
-        //   oldData?.map(article =>
-        //     article.slug === slug
-        //       ? { ...article, author: { ...data.profile } }
-        //       : article,
-        //   ),
-        // );
-        queryClient.invalidateQueries(QUERY_KEYS.feed(1));
+        queryClient.invalidateQueries(['articles', 'feed']);
       },
     },
   );

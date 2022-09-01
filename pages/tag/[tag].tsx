@@ -36,7 +36,13 @@ export default function Tag(): JSX.Element {
       <div className="container page">
         <div className="row">
           <div className="col-md-9">
-            <FeedNavigation />
+            <FeedNavigation
+              routes={[
+                { path: '/', title: 'Your Feed', protected: true },
+                { path: '/all', title: 'Global Feed', protected: false },
+              ]}
+              className="feed-toggle"
+            />
             <Articles
               articles={data?.articles}
               isError={isError}

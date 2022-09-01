@@ -2,46 +2,61 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useAuth } from '../context/AuthContext';
 
-export default function FeedNavigation(): JSX.Element {
+interface FeedRoute {
+  path: string;
+  title: string;
+  protected?: boolean;
+}
+interface FeedNavigationProps {
+  routes: FeedRoute[];
+  className: string;
+}
+
+interface TabProps {
+  route: FeedRoute;
+  isActive: boolean;
+}
+
+function Tab({ route, isActive }: TabProps) {
+  return (
+    <li className="nav-item">
+      <Link href={route.path}>
+        <a className={`nav-link ${isActive ? 'active' : ''} `}>{route.title}</a>
+      </Link>
+    </li>
+  );
+}
+
+export default function FeedNavigation({
+  routes,
+  className,
+}: FeedNavigationProps): JSX.Element {
   const { asPath, query } = useRouter();
   const { tag } = query;
   const { user } = useAuth();
 
-  const activeTab = asPath.startsWith('/all')
-    ? 'all'
-    : asPath.startsWith('/tag')
-    ? 'tag'
-    : 'feed';
-
   return (
-    <div className="feed-toggle">
+    <div className={className}>
       <ul className="nav nav-pills outline-active">
-        {user && (
-          <li className="nav-item">
-            <Link href="/">
-              <a
-                className={`nav-link ${activeTab === 'feed' ? 'active' : ''} `}
-              >
-                Your Feed
-              </a>
-            </Link>
-          </li>
-        )}
-        <li className="nav-item">
-          <Link href="/all">
-            <a className={`nav-link ${activeTab === 'all' ? 'active' : ''}`}>
-              Global Feed
-            </a>
-          </Link>
-        </li>
+        {routes.map(route => {
+          if (route.protected) {
+            return (
+              user && <Tab route={route} isActive={route.path === asPath} />
+            );
+          }
+          return (
+            <Tab
+              key={route.path}
+              route={route}
+              isActive={route.path === asPath}
+            />
+          );
+        })}
         {tag && (
-          <li className="nav-item">
-            <Link href={`/tag/${tag}`}>
-              <a className={`nav-link ${activeTab === 'tag' ? 'active' : ''}`}>
-                # {tag}
-              </a>
-            </Link>
-          </li>
+          <Tab
+            route={{ path: `/tag/${tag}`, title: `# ${tag}` }}
+            isActive={asPath.startsWith('/tag')}
+          />
         )}
       </ul>
     </div>

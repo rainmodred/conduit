@@ -42,11 +42,16 @@ export default function Home() {
           <p>A place to share your knowledge.</p>
         </div>
       </div>
-
       <div className="container page">
         <div className="row">
           <div className="col-md-9">
-            <FeedNavigation />
+            <FeedNavigation
+              routes={[
+                { path: '/', title: 'Your Feed', protected: true },
+                { path: '/all', title: 'Global Feed', protected: false },
+              ]}
+              className="feed-toggle"
+            />
             <Articles
               articles={data?.articles}
               isError={isError}
@@ -54,6 +59,7 @@ export default function Home() {
             />
             <Pagination totalPages={totalPages} />
           </div>
+
           <div className="col-md-3">
             <Tags />
           </div>

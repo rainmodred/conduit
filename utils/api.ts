@@ -133,19 +133,24 @@ function getFeed(page = 1, token?: string, params?: Record<string, string>) {
   return fetcher(`/articles/feed?${searchParams}`, { token });
 }
 
-function getProfile(username: string): Promise<{ profile: Profile }> {
-  return fetcher(`/profiles/${username}`);
+function getProfile(username: string, token?: string): Promise<Profile> {
+  return fetcher<{ profile: Profile }>(`/profiles/${username}`, { token }).then(
+    data => data.profile,
+  );
 }
 
-function followUser(
-  username: string,
-  token: string,
-): Promise<{ profile: Profile }> {
-  return fetcher(`/profiles/${username}/follow`, { method: 'POST', token });
+function followUser(username: string, token: string): Promise<Profile> {
+  return fetcher<{ profile: Profile }>(`/profiles/${username}/follow`, {
+    method: 'POST',
+    token,
+  }).then(data => data.profile);
 }
 
-function unFollowUser(username: string, token: string) {
-  return fetcher(`/profiles/${username}/follow`, { method: 'DELETE', token });
+function unFollowUser(username: string, token: string): Promise<Profile> {
+  return fetcher<{ profile: Profile }>(`/profiles/${username}/follow`, {
+    method: 'DELETE',
+    token,
+  }).then(data => data.profile);
 }
 
 function createArticle(

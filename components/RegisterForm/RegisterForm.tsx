@@ -50,17 +50,20 @@ export default function RegisterForm(): JSX.Element {
       {({ register }) => (
         <>
           <InputField
+            size="lg"
             disabled={isFormDisabled}
             label="Username"
             registration={register('username')}
           />
           <InputField
+            size="lg"
             disabled={isFormDisabled}
             label="Email"
             registration={register('email')}
             type="email"
           />
           <InputField
+            size="lg"
             disabled={isFormDisabled}
             label="Password"
             registration={register('password')}
