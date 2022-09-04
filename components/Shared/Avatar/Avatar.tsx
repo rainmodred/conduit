@@ -11,6 +11,15 @@ interface AvatarProps {
 
 const FALLBACK_IMAGE = 'https://api.realworld.io/images/smiley-cyrus.jpeg';
 
+function parseSrc(src: string) {
+  try {
+    new URL(src);
+    return src;
+  } catch (error) {
+    return FALLBACK_IMAGE;
+  }
+}
+
 export default function Avatar({
   src,
   alt,
@@ -18,7 +27,7 @@ export default function Avatar({
   height = '32',
   className,
 }: AvatarProps) {
-  const [imageSrc, setImageSrc] = useState(src ? src : FALLBACK_IMAGE);
+  const [imageSrc, setImageSrc] = useState(parseSrc(src));
 
   return (
     <Image
