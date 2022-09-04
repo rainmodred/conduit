@@ -77,6 +77,15 @@ export const userHandlers = [
     }
   }),
 
+  //TODO: not implemented
+  rest.get(`${API_URL}/user`, (_req, _res, ctx) => {
+    throw Error('Not implemented');
+  }),
+
+  rest.put(`${API_URL}/user`, (_req, _res, ctx) => {
+    throw Error('Not implemented');
+  }),
+
   rest.post(`${API_URL}/profiles/:username/follow`, (req, _res, ctx) => {
     try {
       const user = requireAuth(req);

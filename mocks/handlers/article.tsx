@@ -19,6 +19,13 @@ export const articleHandlers = [
     const limit = Number(req.url.searchParams.get('limit')) || 10;
     const tag = req.url.searchParams.get('tag');
 
+    const author = Number(req.url.searchParams.get('author'));
+    const favorited = Number(req.url.searchParams.get('favorited'));
+
+    if (author || favorited) {
+      //TODO: not implemented
+    }
+
     const token = req.headers.get('Authorization')?.slice(7);
 
     let articlesCount = 0;
