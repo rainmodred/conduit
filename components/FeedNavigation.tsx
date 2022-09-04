@@ -41,7 +41,13 @@ export default function FeedNavigation({
         {routes.map(route => {
           if (route.protected) {
             return (
-              user && <Tab route={route} isActive={route.path === asPath} />
+              user && (
+                <Tab
+                  key={route.path}
+                  route={route}
+                  isActive={route.path === asPath}
+                />
+              )
             );
           }
           return (
