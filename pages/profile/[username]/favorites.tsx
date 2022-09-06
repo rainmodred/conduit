@@ -18,7 +18,7 @@ export default function Favorites() {
   const { username } = query as { username: string };
 
   const { data, isLoading, isIdle, isError, isSuccess } = useQuery(
-    QUERY_KEYS.myArticles(page),
+    QUERY_KEYS.myArticles(username, page),
     () => getArticles(page, user?.token, { favorited: username }),
     {
       enabled: isReady,

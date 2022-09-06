@@ -7,7 +7,7 @@ import {
   User,
   Comment,
 } from './types';
-import { formatDate, transformArticle, transformComment } from './utils';
+import { transformArticle, transformComment } from './utils';
 
 async function fetcher<T>(
   endpoint: string,
@@ -222,15 +222,18 @@ function deleteComment(
   });
 }
 
-function favoriteArticle(
-  slug: string,
-  token: string,
-): Promise<{ article: Article }> {
-  return fetcher(`/articles/${slug}/favorite`, { method: 'POST', token });
+function favoriteArticle(slug: string, token: string): Promise<Article> {
+  return fetcher<{ article: Article }>(`/articles/${slug}/favorite`, {
+    method: 'POST',
+    token,
+  }).then(data => data.article);
 }
 
-function unfavoriteArticle(slug: string, token: string) {
-  return fetcher(`/articles/${slug}/favorite`, { method: 'DELETE', token });
+function unfavoriteArticle(slug: string, token: string): Promise<Article> {
+  return fetcher<{ article: Article }>(`/articles/${slug}/favorite`, {
+    method: 'DELETE',
+    token,
+  }).then(data => data.article);
 }
 
 export {

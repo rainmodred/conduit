@@ -1,6 +1,6 @@
 import { buildArticle, buildUser } from '../../mocks/data-generators';
 
-import { render, screen } from '../../test/test-utils';
+import { render, renderWithAuthProvider, screen } from '../../test/test-utils';
 import Articles from './Articles';
 
 const author = buildUser();
@@ -20,7 +20,11 @@ const articles = Array.from({ length: 3 }).map(() => {
 
 describe('Articles', () => {
   it('should render articles', () => {
-    render(<Articles isError={false} isLoading={false} articles={articles} />);
+    render(
+      renderWithAuthProvider(
+        <Articles isError={false} isLoading={false} articles={articles} />,
+      ),
+    );
 
     articles.map(article => {
       expect(screen.getByText(article.title)).toBeInTheDocument();
@@ -28,13 +32,21 @@ describe('Articles', () => {
   });
 
   it('should show error message', () => {
-    render(<Articles isError={true} isLoading={false} articles={[]} />);
+    render(
+      renderWithAuthProvider(
+        <Articles isError={true} isLoading={false} articles={[]} />,
+      ),
+    );
 
     expect(screen.getByText('Something went wrong')).toBeInTheDocument();
   });
 
   it('should show loading message', () => {
-    render(<Articles isError={false} isLoading={true} articles={[]} />);
+    render(
+      renderWithAuthProvider(
+        <Articles isError={false} isLoading={true} articles={[]} />,
+      ),
+    );
 
     expect(screen.getByText('Loading articles...')).toBeInTheDocument();
   });

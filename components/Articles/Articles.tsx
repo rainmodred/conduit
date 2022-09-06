@@ -1,5 +1,25 @@
+import { useRouter } from 'next/router';
+
 import ArticlePreview from './ArticlePreview/ArticlePreview';
+import FavoriteArticleButton from '../Shared/Buttons/FavoriteButton/FavoriteButton';
+import useFavoritePreviewMutation from '../../hooks/useFavoritePreviewMutation';
 import { Article } from '../../utils/types';
+import { QUERY_KEYS } from '../../utils/queryKeys';
+
+function createQueryKey(route: string, username: string, page: number) {
+  switch (route) {
+    case '/':
+      return QUERY_KEYS.feed(page);
+    case '/all':
+      return QUERY_KEYS.all(page);
+    case '/profile/[username]':
+      return QUERY_KEYS.myArticles(username, page);
+    case '/profile/[username]/favorites':
+      return QUERY_KEYS.favorites(page);
+    default:
+      throw new Error('Not implemented');
+  }
+}
 
 interface ArticleProps {
   articles: Article[] | undefined;
@@ -12,6 +32,12 @@ export default function Articles({
   isLoading,
   isError,
 }: ArticleProps): JSX.Element {
+  const { route, query } = useRouter();
+
+  const page = Number(query?.page) || 1;
+  const { username } = query as { username: string };
+  const favoriteMutation = useFavoritePreviewMutation();
+
   if (isLoading) {
     return <div className="article-preview">Loading articles...</div>;
   }
@@ -33,21 +59,35 @@ export default function Articles({
             favoritesCount,
             title,
             description,
-            updatedAt,
             tagList,
+            createdAt,
           }) => {
             return (
               <ArticlePreview
+                article={{
+                  slug,
+                  author,
+                  title,
+                  description,
+                  tagList,
+                  createdAt,
+                }}
                 key={slug}
-                slug={slug}
-                author={author}
-                favorited={favorited}
-                favoritesCount={favoritesCount}
-                createdAt={updatedAt}
-                title={title}
-                description={description}
-                tagList={tagList}
-              />
+              >
+                <FavoriteArticleButton
+                  favorited={favorited}
+                  size="sm"
+                  onClick={() =>
+                    favoriteMutation.mutate({
+                      queryKey: createQueryKey(route, username, page),
+                      favorited,
+                      slug,
+                    })
+                  }
+                >
+                  {favoritesCount}
+                </FavoriteArticleButton>
+              </ArticlePreview>
             );
           },
         )

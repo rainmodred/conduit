@@ -18,7 +18,7 @@ export default function Profile() {
   const { username } = query as { username: string };
 
   const { data, isLoading, isIdle, isError, isSuccess } = useQuery(
-    QUERY_KEYS.myArticles(page),
+    QUERY_KEYS.myArticles(username, page),
     () => getArticles(page, user?.token, { author: username }),
     {
       enabled: isReady,
