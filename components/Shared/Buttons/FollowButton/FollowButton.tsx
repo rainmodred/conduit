@@ -14,7 +14,7 @@ export default function FollowButton({
   return (
     <button
       onClick={onClick}
-      className={`btn btn-sm ${
+      className={`btn btn-sm action-btn ${
         followed ? 'btn-secondary' : 'btn-outline-secondary'
       }`}
       disabled={disabled}

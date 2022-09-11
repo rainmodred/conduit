@@ -29,7 +29,18 @@ export default function ProfileInfo() {
   return (
     <div className="row">
       <div className="col-xs-12 col-md-10 offset-md-1">
-        {!profile ? null : (
+        {!profile ? (
+          <>
+            <Avatar
+              src={'fallback'}
+              alt="user img"
+              className="user-img"
+              width="100"
+              height="100"
+            />
+            <h4>Loading...</h4>
+          </>
+        ) : (
           <>
             <Avatar
               alt="user img"
