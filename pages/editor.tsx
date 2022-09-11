@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
@@ -16,6 +17,9 @@ export default function Editor() {
 
   return (
     <div className="editor-page">
+      <Head>
+        <title>Editor</title>
+      </Head>
       <div className="container page">
         <div className="row">
           <div className="col-md-10 offset-md-1 col-xs-12">

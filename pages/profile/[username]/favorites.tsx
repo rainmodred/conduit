@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 
 import Articles from '../../../components/Articles/Articles';
@@ -10,6 +11,9 @@ export default function Favorites() {
 
   return (
     <div className="profile-page">
+      <Head>
+        <title>@{username}</title>
+      </Head>
       <div className="user-info">
         <div className="container">
           <ProfileInfo />

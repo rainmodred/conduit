@@ -8,6 +8,7 @@ import Pagination from '../../components/Shared/Pagination/Pagination';
 import Tags from '../../components/Tags/Tags';
 import { getArticles } from '../../utils/api';
 import { ARTICLES_LIMIT } from '../../config/config';
+import Head from 'next/head';
 
 // TODO: Add Main component
 export default function Tag(): JSX.Element {
@@ -26,6 +27,9 @@ export default function Tag(): JSX.Element {
   }
   return (
     <div className="home-page">
+      <Head>
+        <title>#{query.tag}</title>
+      </Head>
       <div className="banner">
         <div className="container">
           <h1 className="logo-font">conduit</h1>

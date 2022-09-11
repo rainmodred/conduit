@@ -12,6 +12,7 @@ import useFavoriteMutation from '../../hooks/useFavoriteMutation';
 import useFollowMutation from '../../hooks/useFollowMutation';
 import { getArticle } from '../../utils/api';
 import { Article as ArticleModel } from '../../utils/types';
+import Head from 'next/head';
 
 export default function Article(): JSX.Element {
   const { data } = useArticle();
@@ -42,6 +43,9 @@ export default function Article(): JSX.Element {
 
   return (
     <div className="article-page">
+      <Head>
+        <title>{title}</title>
+      </Head>
       <div className="banner">
         <div className="container">
           <h1>{title}</h1>
