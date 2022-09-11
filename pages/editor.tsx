@@ -16,17 +16,19 @@ export default function Editor() {
   }, [user]);
 
   return (
-    <div className="editor-page">
+    <>
       <Head>
         <title>Editor</title>
       </Head>
-      <div className="container page">
-        <div className="row">
-          <div className="col-md-10 offset-md-1 col-xs-12">
-            <CreateArticleForm />
+      <div className="editor-page">
+        <div className="container page">
+          <div className="row">
+            <div className="col-md-10 offset-md-1 col-xs-12">
+              <CreateArticleForm />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

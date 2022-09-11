@@ -10,38 +10,40 @@ export default function Favorites() {
   const { username } = query as { username: string };
 
   return (
-    <div className="profile-page">
+    <>
       <Head>
         <title>@{username}</title>
       </Head>
-      <div className="user-info">
-        <div className="container">
-          <ProfileInfo />
+      <div className="profile-page">
+        <div className="user-info">
+          <div className="container">
+            <ProfileInfo />
+          </div>
         </div>
-      </div>
 
-      <div className="container">
-        <div className="row">
-          <div className="col-xs-12 col-md-10 offset-md-1">
-            <FeedNavigation
-              routes={[
-                {
-                  path: `/profile/${username}`,
-                  title: 'My Articles',
-                  protected: false,
-                },
-                {
-                  path: `/profile/${username}/favorites`,
-                  title: 'Favorited Articles',
-                  protected: false,
-                },
-              ]}
-              className="articles-toggle"
-            />
-            <Articles favorited={username} />
+        <div className="container">
+          <div className="row">
+            <div className="col-xs-12 col-md-10 offset-md-1">
+              <FeedNavigation
+                routes={[
+                  {
+                    path: `/profile/${username}`,
+                    title: 'My Articles',
+                    protected: false,
+                  },
+                  {
+                    path: `/profile/${username}/favorites`,
+                    title: 'Favorited Articles',
+                    protected: false,
+                  },
+                ]}
+                className="articles-toggle"
+              />
+              <Articles favorited={username} />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

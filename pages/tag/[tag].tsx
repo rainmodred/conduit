@@ -10,35 +10,37 @@ export default function Tag(): JSX.Element {
   const { tag } = query as { tag: string };
 
   return (
-    <div className="home-page">
+    <>
       <Head>
         <title>#{tag}</title>
       </Head>
-      <div className="banner">
-        <div className="container">
-          <h1 className="logo-font">conduit</h1>
-          <p>A place to share your knowledge.</p>
+      <div className="home-page">
+        <div className="banner">
+          <div className="container">
+            <h1 className="logo-font">conduit</h1>
+            <p>A place to share your knowledge.</p>
+          </div>
         </div>
-      </div>
 
-      <div className="container page">
-        <div className="row">
-          <div className="col-md-9">
-            <FeedNavigation
-              routes={[
-                { path: '/', title: 'Your Feed', protected: true },
-                { path: '/all', title: 'Global Feed', protected: false },
-              ]}
-              className="feed-toggle"
-            />
-            <Articles />
-          </div>
-          <div className="col-md-3">
-            <Tags />
+        <div className="container page">
+          <div className="row">
+            <div className="col-md-9">
+              <FeedNavigation
+                routes={[
+                  { path: '/', title: 'Your Feed', protected: true },
+                  { path: '/all', title: 'Global Feed', protected: false },
+                ]}
+                className="feed-toggle"
+              />
+              <Articles />
+            </div>
+            <div className="col-md-3">
+              <Tags />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

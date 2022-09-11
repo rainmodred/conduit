@@ -40,84 +40,86 @@ export default function Article(): JSX.Element {
     deleteArticleMutation.isLoading;
 
   return (
-    <div className="article-page">
+    <>
       <Head>
         <title>{title}</title>
       </Head>
-      <div className="banner">
-        <div className="container">
-          <h1>{title}</h1>
+      <div className="article-page">
+        <div className="banner">
+          <div className="container">
+            <h1>{title}</h1>
 
-          <ArticleControls
-            slug={slug}
-            isDisabled={isDisabled}
-            isFavorited={favorited}
-            isFollowing={author?.following}
-            onDelete={handleDeleteArticle}
-            onFavorite={handleFavoriteClick}
-            onFollow={handleFollowClick}
-            author={{
-              username: author?.username,
-              bio: author?.bio,
-              following: false,
-              image: author?.image,
-            }}
-            createdAt={createdAt}
-            favoritesCount={favoritesCount}
-          />
-        </div>
-      </div>
-
-      <div className="container page">
-        <div className="row article-content">
-          <div className="col-md-12">
-            <ReactMarkdown>{body}</ReactMarkdown>
+            <ArticleControls
+              slug={slug}
+              isDisabled={isDisabled}
+              isFavorited={favorited}
+              isFollowing={author?.following}
+              onDelete={handleDeleteArticle}
+              onFavorite={handleFavoriteClick}
+              onFollow={handleFollowClick}
+              author={{
+                username: author?.username,
+                bio: author?.bio,
+                following: false,
+                image: author?.image,
+              }}
+              createdAt={createdAt}
+              favoritesCount={favoritesCount}
+            />
           </div>
         </div>
 
-        <hr />
+        <div className="container page">
+          <div className="row article-content">
+            <div className="col-md-12">
+              <ReactMarkdown>{body}</ReactMarkdown>
+            </div>
+          </div>
 
-        <div className="article-actions">
-          <ArticleControls
-            slug={slug}
-            isDisabled={isDisabled}
-            isFavorited={favorited}
-            isFollowing={author?.following}
-            onDelete={handleDeleteArticle}
-            onFavorite={handleFavoriteClick}
-            onFollow={handleFollowClick}
-            author={{
-              username: author?.username,
-              bio: author?.bio,
-              following: false,
-              image: author?.image,
-            }}
-            createdAt={createdAt}
-            favoritesCount={favoritesCount}
-          />
-        </div>
+          <hr />
 
-        <div className="row">
-          <div className="col-xs-12 col-md-8 offset-md-2">
-            {user ? (
-              <AddCommentForm />
-            ) : (
-              <p>
-                <Link href="/login">
-                  <a> Sign in </a>
-                </Link>
-                or
-                <Link href="/register">
-                  <a> sign up </a>
-                </Link>
-                to add comments on this article.
-              </p>
-            )}
-            <CommentsList />
+          <div className="article-actions">
+            <ArticleControls
+              slug={slug}
+              isDisabled={isDisabled}
+              isFavorited={favorited}
+              isFollowing={author?.following}
+              onDelete={handleDeleteArticle}
+              onFavorite={handleFavoriteClick}
+              onFollow={handleFollowClick}
+              author={{
+                username: author?.username,
+                bio: author?.bio,
+                following: false,
+                image: author?.image,
+              }}
+              createdAt={createdAt}
+              favoritesCount={favoritesCount}
+            />
+          </div>
+
+          <div className="row">
+            <div className="col-xs-12 col-md-8 offset-md-2">
+              {user ? (
+                <AddCommentForm />
+              ) : (
+                <p>
+                  <Link href="/login">
+                    <a> Sign in </a>
+                  </Link>
+                  or
+                  <Link href="/register">
+                    <a> sign up </a>
+                  </Link>
+                  to add comments on this article.
+                </p>
+              )}
+              <CommentsList />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
