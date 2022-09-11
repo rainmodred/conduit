@@ -1,47 +1,35 @@
 import Link from 'next/link';
-import { useMutation } from 'react-query';
-import { Article } from '../../../utils/types';
-import Avatar from '../../Shared/Avatar/Avatar';
-import FavoriteArticleButton from '../../Shared/Buttons/FavoriteButton/FavoriteButton';
 
-type ArticlePreviewProps = Omit<Article, 'updatedAt' | 'body'>;
+import Avatar from '../../Shared/Avatar/Avatar';
+import { Article } from '../../../utils/types';
+
+interface ArticlePreviewProps {
+  article: Omit<Article, 'updatedAt' | 'body' | 'favorited' | 'favoritesCount'>;
+  children: React.ReactNode;
+}
 
 export default function ArticlePreview({
-  slug,
-  title,
-  description,
-  createdAt,
-  author,
-  favorited,
-  favoritesCount,
-  tagList,
+  article,
+  children,
 }: ArticlePreviewProps): JSX.Element {
+  const { slug, title, description, createdAt, author, tagList } = article;
   const { image, username } = author;
-  const mutation = useMutation();
-
-  function handleFavoriteClick() {
-    // TODO
-  }
 
   return (
     <div className="article-preview">
       <div className="article-meta">
-        <a href={`/profile/${username}`}>
-          <Avatar src={image} alt="author avatar" />
-        </a>
-        <div className="info">
-          <a href="" className="author">
-            {username}
+        <Link href={`/profile/${username}`}>
+          <a>
+            <Avatar src={image} alt="author avatar" />
           </a>
+        </Link>
+        <div className="info">
+          <Link href={`/profile/${username}`}>
+            <a className="author">{username}</a>
+          </Link>
           <span className="date">{createdAt}</span>
         </div>
-        <FavoriteArticleButton
-          favorited={favorited}
-          size="sm"
-          onClick={handleFavoriteClick}
-        >
-          {favoritesCount}
-        </FavoriteArticleButton>
+        {children}
       </div>
 
       <Link href={`/article/${slug}`}>

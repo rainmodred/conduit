@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface AvatarProps {
   src: string;
@@ -28,6 +28,10 @@ export default function Avatar({
   className,
 }: AvatarProps) {
   const [imageSrc, setImageSrc] = useState(parseSrc(src));
+
+  useEffect(() => {
+    setImageSrc(parseSrc(src));
+  }, [src]);
 
   return (
     <Image

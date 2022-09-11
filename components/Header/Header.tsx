@@ -24,7 +24,7 @@ export default function Header(): JSX.Element {
   const { user } = useAuth();
 
   function renderRoutes() {
-    const profilePath = `profile/${user?.username}`;
+    const profilePath = `/profile/${user?.username}`;
 
     if (user) {
       return (
