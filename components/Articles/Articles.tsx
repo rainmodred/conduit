@@ -49,8 +49,7 @@ export default function Articles({
         ? getFeed(page, user?.token)
         : getArticles(page, user?.token, { author, favorited }),
     {
-      enabled:
-        isReady && Boolean(username) && Boolean(user || user === undefined),
+      enabled: isReady && Boolean(user || user === undefined),
     },
   );
 
