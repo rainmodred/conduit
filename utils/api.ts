@@ -111,7 +111,17 @@ function getArticles(
     ...params,
     limit,
     offset,
-  }).toString();
+  });
+  const keysForDel = [];
+  for (const [key, value] of searchParams) {
+    if (!value || value === '' || value === 'undefined') {
+      keysForDel.push(key);
+    }
+  }
+
+  for (const key of keysForDel) {
+    searchParams.delete(key);
+  }
 
   return fetcher<ArticlesFromAPi>(`/articles?${searchParams}`, {
     token,
@@ -121,7 +131,11 @@ function getArticles(
   }));
 }
 
-function getFeed(page = 1, token?: string, params?: Record<string, string>) {
+function getFeed(
+  page = 1,
+  token?: string,
+  params?: Record<string, string>,
+): Promise<ArticlesFromAPi> {
   const limit = '10';
 
   let offset = '0';
@@ -135,7 +149,12 @@ function getFeed(page = 1, token?: string, params?: Record<string, string>) {
     offset,
   }).toString();
 
-  return fetcher(`/articles/feed?${searchParams}`, { token });
+  return fetcher<ArticlesFromAPi>(`/articles/feed?${searchParams}`, {
+    token,
+  }).then(data => ({
+    articles: data.articles.map(transformArticle),
+    articlesCount: data.articlesCount,
+  }));
 }
 
 function getProfile(username: string, token?: string): Promise<Profile> {
