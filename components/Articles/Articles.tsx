@@ -10,16 +10,36 @@ import { getArticles, getFeed } from '../../utils/api';
 import { QUERY_KEYS } from '../../utils/queryKeys';
 import { ARTICLES_LIMIT } from '../../config/config';
 
-function createQueryKey(route: string, username: string, page: number) {
+function createQueryKey(
+  route: string,
+  options: { username?: string; tag?: string; page?: number },
+) {
+  const { username, page, tag } = options;
   switch (route) {
     case '/':
+      if (!page) {
+        throw new Error('Not implemented');
+      }
       return QUERY_KEYS.feed(page);
     case '/all':
+      if (!page) {
+        throw new Error('Not implemented');
+      }
       return QUERY_KEYS.all(page);
     case '/profile/[username]':
+      if (!page || !username) {
+        throw new Error('Not implemented');
+      }
       return QUERY_KEYS.myArticles(username, page);
     case '/profile/[username]/favorites':
+      if (!page) {
+        throw new Error('Not implemented');
+      }
       return QUERY_KEYS.favorites(page);
+    case '/tag/[tag]':
+      if (!page || !tag) {
+      }
+      return QUERY_KEYS.tag(tag, page);
     default:
       throw new Error('Not implemented');
   }
@@ -31,6 +51,7 @@ interface ArticleProps {
   favorited?: string;
 }
 
+//TODO: too bloated, should move useQuery to page?
 export default function Articles({
   isFeed = false,
   author,
@@ -40,14 +61,14 @@ export default function Articles({
   const { user } = useAuth();
 
   const page = Number(query?.page) || 1;
-  const { username } = query as { username: string };
+  const { username, tag } = query as { username: string; tag: string };
   const favoriteMutation = useFavoritePreviewMutation();
   const { data, isLoading, isIdle, isError, isSuccess } = useQuery(
-    createQueryKey(route, username, page),
+    createQueryKey(route, { username, tag, page }),
     () =>
       isFeed
         ? getFeed(page, user?.token)
-        : getArticles(page, user?.token, { author, favorited }),
+        : getArticles(page, user?.token, { author, favorited, tag }),
     {
       enabled: isReady && Boolean(user || user === undefined),
     },
@@ -100,7 +121,7 @@ export default function Articles({
                   size="sm"
                   onClick={() =>
                     favoriteMutation.mutate({
-                      queryKey: createQueryKey(route, username, page),
+                      queryKey: createQueryKey(route, { username, page }),
                       favorited,
                       slug,
                     })

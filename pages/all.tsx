@@ -1,3 +1,5 @@
+import Head from 'next/head';
+
 import Articles from '../components/Articles/Articles';
 import FeedNavigation from '../components/FeedNavigation';
 import Tags from '../components/Tags/Tags';
@@ -5,6 +7,9 @@ import Tags from '../components/Tags/Tags';
 export default function All(): JSX.Element {
   return (
     <div className="home-page">
+      <Head>
+        <title>All</title>
+      </Head>
       <div className="banner">
         <div className="container">
           <h1 className="logo-font">conduit</h1>

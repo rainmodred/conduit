@@ -1,5 +1,5 @@
+import Head from 'next/head';
 import Link from 'next/link';
-import { dehydrate, QueryClient } from 'react-query';
 import AddCommentForm from '../../components/AddCommentForm/AddCommentForm';
 import ReactMarkdown from 'react-markdown';
 
@@ -10,7 +10,6 @@ import useArticle from '../../hooks/useArticle';
 import { useDeleteArticleMutation } from '../../hooks/useDeleteArticleMutation';
 import useFavoriteMutation from '../../hooks/useFavoriteMutation';
 import useFollowMutation from '../../hooks/useFollowMutation';
-import { getArticle } from '../../utils/api';
 import { Article as ArticleModel } from '../../utils/types';
 
 export default function Article(): JSX.Element {
@@ -42,6 +41,9 @@ export default function Article(): JSX.Element {
 
   return (
     <div className="article-page">
+      <Head>
+        <title>{title}</title>
+      </Head>
       <div className="banner">
         <div className="container">
           <h1>{title}</h1>
@@ -119,23 +121,23 @@ export default function Article(): JSX.Element {
   );
 }
 
-export async function getServerSideProps({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  const queryClient = new QueryClient();
-  const { slug } = params;
-
-  await queryClient.prefetchQuery(
-    ['article', slug],
-    () => getArticle(slug as string),
-    { staleTime: 1000 * 60 * 5 },
-  );
-
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-    },
-  };
-}
+// export async function getServerSideProps({
+//   params,
+// }: {
+//   params: { slug: string };
+// }) {
+//   const queryClient = new QueryClient();
+//   const { slug } = params;
+//
+//   await queryClient.prefetchQuery(
+//     QUERY_KEYS.articleDetail(slug),
+//     () => getArticle(slug as string),
+//     { staleTime: 1000 * 60 * 5 },
+//   );
+//
+//   return {
+//     props: {
+//       dehydratedState: dehydrate(queryClient),
+//     },
+//   };
+// }

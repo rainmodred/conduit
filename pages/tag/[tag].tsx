@@ -1,31 +1,19 @@
-import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { dehydrate, QueryClient, useQuery } from 'react-query';
 
 import Articles from '../../components/Articles/Articles';
 import FeedNavigation from '../../components/FeedNavigation';
-import Pagination from '../../components/Shared/Pagination/Pagination';
 import Tags from '../../components/Tags/Tags';
-import { getArticles } from '../../utils/api';
-import { ARTICLES_LIMIT } from '../../config/config';
 
-// TODO: Add Main component
 export default function Tag(): JSX.Element {
-  const { isReady, query } = useRouter();
+  const { query } = useRouter();
+  const { tag } = query as { tag: string };
 
-  const page = Number(query?.page) || 1;
-  const { data, isLoading, isIdle, isError, isSuccess } = useQuery(
-    ['articles', `${query?.tag}`, page],
-    () => getArticles(page, undefined, { tag: query?.tag as string }),
-    { enabled: isReady && Boolean(query?.tag) },
-  );
-
-  let totalPages = 0;
-  if (isSuccess) {
-    totalPages = Math.ceil(data?.articlesCount / ARTICLES_LIMIT);
-  }
   return (
     <div className="home-page">
+      <Head>
+        <title>#{tag}</title>
+      </Head>
       <div className="banner">
         <div className="container">
           <h1 className="logo-font">conduit</h1>
@@ -43,12 +31,7 @@ export default function Tag(): JSX.Element {
               ]}
               className="feed-toggle"
             />
-            <Articles
-              articles={data?.articles}
-              isError={isError}
-              isLoading={isLoading || isIdle}
-            />
-            <Pagination totalPages={totalPages} />
+            <Articles />
           </div>
           <div className="col-md-3">
             <Tags />
@@ -59,17 +42,18 @@ export default function Tag(): JSX.Element {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async context => {
-  const page = parseInt(context.query.page as string) || 1;
-  const queryClient = new QueryClient();
-
-  await queryClient.prefetchQuery(['articles', 'tag', page], () =>
-    getArticles(page, undefined, { tag: context.query?.tag }),
-  );
-
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-    },
-  };
-};
+// export const getServerSideProps: GetServerSideProps = async context => {
+//   const page = parseInt(context.query.page as string) || 1;
+//   const tag = context.query?.tag as string;
+//   const queryClient = new QueryClient();
+//
+//   await queryClient.prefetchQuery(QUERY_KEYS.tag(tag, page), () =>
+//     getArticles(page, undefined, { tag: context.query?.tag }),
+//   );
+//
+//   return {
+//     props: {
+//       dehydratedState: dehydrate(queryClient),
+//     },
+//   };
+// };

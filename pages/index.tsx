@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
@@ -20,6 +21,9 @@ export default function Home() {
 
   return (
     <div className="home-page">
+      <Head>
+        <title>Feed</title>
+      </Head>
       <div className="banner">
         <div className="container">
           <h1 className="logo-font">conduit</h1>

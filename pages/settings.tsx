@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
@@ -21,6 +22,9 @@ export default function Settings() {
 
   return (
     <div className="settings-page">
+      <Head>
+        <title>Settings</title>
+      </Head>
       <div className="container page">
         <div className="row">
           <div className="col-md-6 offset-md-3 col-xs-12">

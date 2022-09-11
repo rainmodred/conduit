@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import LoginForm from '../components/LoginForm/LoginForm';
 import { useAuth } from '../context/AuthContext';
+import Head from 'next/head';
 
 export default function Login() {
   const router = useRouter();
@@ -17,6 +18,9 @@ export default function Login() {
 
   return (
     <div className="auth-page">
+      <Head>
+        <title>Sign In</title>
+      </Head>
       <div className="container page">
         <div className="row">
           <div className="col-md-6 offset-md-3 col-xs-12">
