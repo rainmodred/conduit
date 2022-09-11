@@ -6,5 +6,6 @@ export const QUERY_KEYS = {
   favorites: (page: number) => ['articles', 'favorites', page] as const,
   myArticles: (username: string, page: number) =>
     ['articles', username, page] as const,
+  tag: (tag: string, page: number) => ['articles', tag, page] as const,
   articleDetail: (slug: string) => ['article', slug] as const,
 };
