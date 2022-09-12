@@ -1,23 +1,12 @@
 import Head from 'next/head';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
 
 import Articles from '../components/Articles/Articles';
 import FeedNavigation from '../components/FeedNavigation';
 import Tags from '../components/Tags/Tags';
-import { useAuth } from '../context/AuthContext';
+import useFeed from '../hooks/useFeed';
 
 export default function Home() {
-  const { user } = useAuth();
-  const { isReady, push } = useRouter();
-
-  useEffect(() => {
-    if (isReady && user === undefined) {
-      push({ pathname: '/all' });
-    }
-
-    // infinite rerender with push
-  }, [user, isReady]);
+  const { queryKey, data, isError } = useFeed();
 
   return (
     <>
@@ -41,7 +30,7 @@ export default function Home() {
                 ]}
                 className="feed-toggle"
               />
-              <Articles isFeed={true} />
+              <Articles queryKey={queryKey} data={data} isError={isError} />
             </div>
 
             <div className="col-md-3">

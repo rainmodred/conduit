@@ -4,10 +4,12 @@ import { useRouter } from 'next/router';
 import Articles from '../../../components/Articles/Articles';
 import FeedNavigation from '../../../components/FeedNavigation';
 import ProfileInfo from '../../../components/ProfileInfo/ProfileInfo';
+import useArticles from '../../../hooks/useArticles';
 
 export default function Favorites() {
   const { query } = useRouter();
   const { username } = query as { username: string };
+  const { queryKey, data, isError } = useArticles({ favorited: username });
 
   return (
     <>
@@ -39,7 +41,8 @@ export default function Favorites() {
                 ]}
                 className="articles-toggle"
               />
-              <Articles favorited={username} />
+
+              <Articles queryKey={queryKey} data={data} isError={isError} />
             </div>
           </div>
         </div>

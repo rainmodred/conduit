@@ -1,3 +1,4 @@
+import { ARTICLES_LIMIT } from '../config/config';
 import { Article, AuthErrors, User, Comment } from './types';
 
 // function setToStorage<T>(key: string, value: T): void {
@@ -72,6 +73,10 @@ function transformComment(comment: Comment): Comment {
   };
 }
 
+function getTotalPages(articlesCount: number) {
+  return Math.ceil(articlesCount / ARTICLES_LIMIT);
+}
+
 export {
   saveCredentials,
   getCredentials,
@@ -80,4 +85,5 @@ export {
   formatAuthErrors,
   transformArticle,
   transformComment,
+  getTotalPages,
 };
