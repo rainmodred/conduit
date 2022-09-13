@@ -73,7 +73,7 @@ const customRender = (
 
 function renderWithAuthProvider(
   children: React.ReactNode,
-  user: User | null = null,
+  user: User | undefined | null = undefined,
 ) {
   const setUser = jest.fn();
   const logout = jest.fn();

@@ -1,8 +1,9 @@
 import { rest } from 'msw';
+import jwt from 'jsonwebtoken';
 
 import { LoginFormValues } from '../../components/LoginForm/LoginForm';
 import { RegisterFormValues } from '../../components/RegisterForm/RegisterForm';
-import { API_URL } from '../../config/config';
+import { API_URL, JWT_SECRET } from '../../config/config';
 import db, { createUser, persistDb } from '../db';
 import {
   authenticate,
@@ -84,6 +85,41 @@ export const userHandlers = [
 
   rest.put(`${API_URL}/user`, (_req, _res, ctx) => {
     throw Error('Not implemented');
+  }),
+
+  rest.get(`${API_URL}/profiles/:username`, (req, _res, ctx) => {
+    throw Error('Not implemented');
+    // const { username } = req.params as { username: string };
+    // const user = db.user.findFirst({
+    //   where: { username: { equals: username } },
+    // });
+    // if (!user) {
+    //   throw new Error('User not found');
+    // }
+    // const encodedToken = req.headers.get('Authorization')?.slice(7);
+    // if (encodedToken) {
+    //   const decodedToken = jwt.verify(encodedToken, JWT_SECRET) as {
+    //     id: string;
+    //   };
+    //   const following = !!db.user.findFirst({
+    //     where: {
+    //       username: { equals: username },
+    //       followedBy: { id: { equals: decodedToken.id } },
+    //     },
+    //   });
+    //
+    //   const sanitizedProfile = sanitizeProfile(user, { following });
+    //   return delayedResponse(
+    //     ctx.status(200),
+    //     ctx.json({ profile: sanitizedProfile }),
+    //   );
+    // }
+    //
+    // const sanitizedProfile = sanitizeProfile(user);
+    // return delayedResponse(
+    //   ctx.status(200),
+    //   ctx.json({ profile: sanitizedProfile }),
+    // );
   }),
 
   rest.post(`${API_URL}/profiles/:username/follow`, (req, _res, ctx) => {
