@@ -17,7 +17,7 @@ export default function useFeed() {
     queryKey,
     () => getFeed(page, user?.token),
     {
-      enabled: isReady && Boolean(user || user === undefined),
+      enabled: isReady && Boolean(user),
     },
   );
 
