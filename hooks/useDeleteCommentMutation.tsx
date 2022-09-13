@@ -21,9 +21,11 @@ export function useDeleteCommentMutation(commentId: string) {
         const previousComments = queryClient.getQueryData<Comment[]>(
           QUERY_KEYS.comments(slug),
         );
-        queryClient.setQueryData<Comment[]>(QUERY_KEYS.comments(slug), old =>
-          old?.filter(c => c.id !== commentId),
-        );
+        if (previousComments) {
+          queryClient.setQueryData<Comment[]>(QUERY_KEYS.comments(slug), () =>
+            previousComments?.filter(c => c.id !== commentId),
+          );
+        }
 
         return { previousComments };
       },
