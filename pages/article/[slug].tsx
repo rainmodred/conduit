@@ -1,8 +1,9 @@
 import Head from 'next/head';
 import Link from 'next/link';
-import AddCommentForm from '../../components/AddCommentForm/AddCommentForm';
+import { useRouter } from 'next/router';
 import ReactMarkdown from 'react-markdown';
 
+import AddCommentForm from '../../components/AddCommentForm/AddCommentForm';
 import ArticleControls from '../../components/Article/ArticleControls/ArticleControls';
 import CommentsList from '../../components/CommentsList/CommentsList';
 import { useAuth } from '../../context/AuthContext';
@@ -13,7 +14,8 @@ import useFollowMutation from '../../hooks/useFollowMutation';
 import { Article as ArticleModel } from '../../utils/types';
 
 export default function Article(): JSX.Element {
-  const { data } = useArticle();
+  const { push } = useRouter();
+  const { data, isError, isLoading } = useArticle();
   const { user } = useAuth();
   const { author, body, createdAt, favorited, favoritesCount, slug, title } =
     data ?? ({} as ArticleModel);
@@ -39,6 +41,10 @@ export default function Article(): JSX.Element {
     favoriteMutation.isLoading ||
     deleteArticleMutation.isLoading;
 
+  if (isError) {
+    push('/all');
+  }
+
   return (
     <>
       <Head>
@@ -47,7 +53,7 @@ export default function Article(): JSX.Element {
       <div className="article-page">
         <div className="banner">
           <div className="container">
-            <h1>{title}</h1>
+            <h1>{isLoading ? 'Loading...' : title}</h1>
 
             <ArticleControls
               slug={slug}
@@ -131,10 +137,8 @@ export default function Article(): JSX.Element {
 //   const queryClient = new QueryClient();
 //   const { slug } = params;
 //
-//   await queryClient.prefetchQuery(
-//     QUERY_KEYS.articleDetail(slug),
-//     () => getArticle(slug as string),
-//     { staleTime: 1000 * 60 * 5 },
+//   await queryClient.prefetchQuery(QUERY_KEYS.articleDetail(slug), () =>
+//     getArticle(slug as string),
 //   );
 //
 //   return {
