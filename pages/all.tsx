@@ -1,10 +1,13 @@
 import Head from 'next/head';
 
 import Articles from '../components/Articles/Articles';
-import FeedNavigation from '../components/FeedNavigation';
+import FeedNavigation from '../components/FeedNavigation/FeedNavigation';
 import Tags from '../components/Tags/Tags';
+import useArticles from '../hooks/useArticles';
 
 export default function All(): JSX.Element {
+  const { queryKey, data, isError } = useArticles();
+
   return (
     <>
       <Head>
@@ -28,7 +31,8 @@ export default function All(): JSX.Element {
                 ]}
                 className="feed-toggle"
               />
-              <Articles />
+
+              <Articles queryKey={queryKey} data={data} isError={isError} />
             </div>
 
             <div className="col-md-3">

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
-import NavLink from '../NavLink';
+import NavLink from './NavLink';
 import Avatar from '../Shared/Avatar/Avatar';
 
 type Route = {

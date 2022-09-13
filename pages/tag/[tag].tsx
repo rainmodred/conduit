@@ -2,12 +2,14 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 
 import Articles from '../../components/Articles/Articles';
-import FeedNavigation from '../../components/FeedNavigation';
+import FeedNavigation from '../../components/FeedNavigation/FeedNavigation';
 import Tags from '../../components/Tags/Tags';
+import useArticles from '../../hooks/useArticles';
 
 export default function Tag(): JSX.Element {
   const { query } = useRouter();
   const { tag } = query as { tag: string };
+  const { queryKey, data, isError } = useArticles({ tag });
 
   return (
     <>
@@ -32,7 +34,8 @@ export default function Tag(): JSX.Element {
                 ]}
                 className="feed-toggle"
               />
-              <Articles />
+
+              <Articles queryKey={queryKey} data={data} isError={isError} />
             </div>
             <div className="col-md-3">
               <Tags />

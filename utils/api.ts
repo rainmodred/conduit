@@ -34,11 +34,13 @@ async function fetcher<T>(
 
     if (response.status === 401) {
       window.localStorage.removeItem('auth');
-      window.location = '/login';
+      (window as Window).location = '/login';
     }
 
     if (response.status === 204) {
-      return;
+      //TODO: fixme
+      //@ts-ignore
+      return null;
     }
 
     if (!response.ok) {
@@ -210,10 +212,10 @@ function deleteArticle(slug: string, token: string): Promise<unknown> {
   return fetcher(`/articles/${slug}`, { method: 'DELETE', token });
 }
 
-function getComments(slug: string): Promise<Comment[]> {
-  return fetcher<{ comments: Comment[] }>(`/articles/${slug}/comments`).then(
-    data => data.comments.map(transformComment),
-  );
+function getComments(slug: string, token?: string): Promise<Comment[]> {
+  return fetcher<{ comments: Comment[] }>(`/articles/${slug}/comments`, {
+    token,
+  }).then(data => data.comments.map(transformComment));
 }
 
 function addComment(

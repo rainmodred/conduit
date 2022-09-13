@@ -12,6 +12,7 @@ export default function ProfileInfo() {
 
   const { user } = useAuth();
   const { username } = query as { username: string };
+  console.log('username:', username);
   const { profile } = useProfile(username, user?.token);
 
   const followMutation = useFollowMutation();

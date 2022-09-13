@@ -2,20 +2,22 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 
 import Articles from '../../../components/Articles/Articles';
-import FeedNavigation from '../../../components/FeedNavigation';
+import FeedNavigation from '../../../components/FeedNavigation/FeedNavigation';
 import ProfileInfo from '../../../components/ProfileInfo/ProfileInfo';
+import useArticles from '../../../hooks/useArticles';
 
 export default function Profile() {
   const { query } = useRouter();
   const { username } = query as { username: string };
+  const { queryKey, data, isError } = useArticles({ author: username });
 
   return (
     <>
       <Head>
         <title>@{username}</title>
       </Head>
-      <div className="user-info">
-        <div className="profile-page">
+      <div className="profile-page">
+        <div className="user-info">
           <div className="container">
             <ProfileInfo />
           </div>
@@ -39,7 +41,7 @@ export default function Profile() {
                 ]}
                 className="articles-toggle"
               />
-              <Articles author={username} />
+              <Articles queryKey={queryKey} data={data} isError={isError} />
             </div>
           </div>
         </div>

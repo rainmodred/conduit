@@ -1,3 +1,6 @@
+//TODO: fixme
+/* eslint-disable */
+//@ts-nocheck
 import { rest } from 'msw';
 import jwt from 'jsonwebtoken';
 

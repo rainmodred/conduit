@@ -1,4 +1,9 @@
-import { SubmitHandler, useForm, UseFormReturn } from 'react-hook-form';
+import {
+  DeepPartial,
+  SubmitHandler,
+  useForm,
+  UseFormReturn,
+} from 'react-hook-form';
 import { ZodType, ZodTypeDef } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -7,7 +12,7 @@ import { FormattedAuthErrors } from '../../../utils/types';
 import { useEffect } from 'react';
 
 interface FormProps<TFormValues, Schema> {
-  defaultValues?: Partial<TFormValues>;
+  defaultValues?: DeepPartial<TFormValues>;
   authErrors?: FormattedAuthErrors;
   schema: Schema;
   children: (methods: UseFormReturn<TFormValues>) => React.ReactNode;
@@ -37,7 +42,7 @@ export default function Form<
   const {
     handleSubmit,
     reset,
-    formState: { errors, isSubmitted, isSubmitSuccessful },
+    formState: { errors, isSubmitSuccessful },
   } = methods;
 
   useEffect(() => {
