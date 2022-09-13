@@ -51,7 +51,7 @@ export default function useFollowMutation() {
           return { prevProfile };
         }
       },
-      onError: (err, { profile, slug }, context) => {
+      onError: (_err, { profile, slug }, context) => {
         if (context?.previousValue) {
           if (slug) {
             queryClient.setQueryData<Article>(
@@ -74,7 +74,7 @@ export default function useFollowMutation() {
             QUERY_KEYS.articleDetail(slug),
             oldData => {
               return {
-                ...oldData,
+                ...oldData!,
                 author: { ...data },
               };
             },

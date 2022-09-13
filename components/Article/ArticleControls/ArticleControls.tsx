@@ -47,13 +47,11 @@ export default function ArticleControls({
     //TODO: create routes array
 
     checkAuth();
-
     onFollow();
   }
 
   function handleFavorite() {
     checkAuth();
-
     onFavorite();
   }
 

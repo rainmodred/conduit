@@ -34,11 +34,13 @@ async function fetcher<T>(
 
     if (response.status === 401) {
       window.localStorage.removeItem('auth');
-      window.location = '/login';
+      (window as Window).location = '/login';
     }
 
     if (response.status === 204) {
-      return;
+      //TODO: fixme
+      //@ts-ignore
+      return null;
     }
 
     if (!response.ok) {
