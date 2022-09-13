@@ -2,7 +2,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 
 import Articles from '../../components/Articles/Articles';
-import FeedNavigation from '../../components/FeedNavigation';
+import FeedNavigation from '../../components/FeedNavigation/FeedNavigation';
 import Tags from '../../components/Tags/Tags';
 import useArticles from '../../hooks/useArticles';
 
