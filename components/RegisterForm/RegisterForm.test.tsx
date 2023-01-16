@@ -50,4 +50,27 @@ describe('RegisterForm', () => {
       }),
     ).toBeInTheDocument();
   });
+
+  it('should disable inputs and submit button if form isSubmitting', async () => {
+    render(renderWithAuthProvider(<RegisterForm />));
+    const user = userEvent.setup();
+
+    const { username, email, password } = createUser();
+    const usernameInput = screen.getByPlaceholderText(/username/i);
+    const emailInput = screen.getByPlaceholderText(/email/i);
+    const passwordInput = screen.getByPlaceholderText(/password/i);
+    const submitButton = screen.getByRole('button', {
+      name: /sign up/i,
+    });
+
+    await user.type(usernameInput, username);
+    await user.type(emailInput, email);
+    await user.type(passwordInput, password);
+    await userEvent.click(submitButton);
+
+    expect(usernameInput).toBeDisabled();
+    expect(emailInput).toBeDisabled();
+    expect(passwordInput).toBeDisabled();
+    expect(submitButton).toBeDisabled();
+  });
 });

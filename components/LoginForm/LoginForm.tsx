@@ -24,19 +24,15 @@ export default function LoginForm(): JSX.Element {
   const router = useRouter();
   const { setUser } = useAuth();
   const [authErrors, setAuthErrors] = useState<FormattedAuthErrors>({});
-  const [isFormDisabled, setIsFormDisabled] = useState(false);
 
   function handleSubmit({ email, password }: LoginFormValues) {
     setAuthErrors({});
-    setIsFormDisabled(true);
-    signIn(email, password).then(
+    return signIn(email, password).then(
       response => {
-        setIsFormDisabled(false);
         setUser(response.user);
         router.push('/');
       },
       error => {
-        setIsFormDisabled(false);
         const formattedErrors = formatAuthErrors(error);
         setAuthErrors(formattedErrors);
       },
@@ -45,24 +41,26 @@ export default function LoginForm(): JSX.Element {
 
   return (
     <Form authErrors={authErrors} onSubmit={handleSubmit} schema={schema}>
-      {({ register }) => (
+      {({ register, formState }) => (
         <>
           <InputField
             size="lg"
-            disabled={isFormDisabled}
+            disabled={formState.isSubmitting}
             label="Email"
             registration={register('email')}
             type="email"
           />
           <InputField
             size="lg"
-            disabled={isFormDisabled}
+            disabled={formState.isSubmitting}
             label="Password"
             registration={register('password')}
             type="password"
           />
 
-          <Button>Sign in</Button>
+          <Button type="submit" disabled={formState.isSubmitting}>
+            Sign in
+          </Button>
         </>
       )}
     </Form>

@@ -26,19 +26,16 @@ export default function RegisterForm(): JSX.Element {
   const router = useRouter();
   const { setUser } = useAuth();
   const [authErrors, setAuthErrors] = useState<FormattedAuthErrors>({});
-  const [isFormDisabled, setIsFormDisabled] = useState(false);
 
   function handleSubmit({ email, username, password }: RegisterFormValues) {
     setAuthErrors({});
-    signUp(email, username, password).then(
+    return signUp(email, username, password).then(
       response => {
-        setIsFormDisabled(false);
         setUser(response.user);
         // TODO: remove?
         router.push('/');
       },
       error => {
-        setIsFormDisabled(false);
         const formattedErrors = formatAuthErrors(error);
         setAuthErrors(formattedErrors);
       },
@@ -47,30 +44,32 @@ export default function RegisterForm(): JSX.Element {
 
   return (
     <Form authErrors={authErrors} onSubmit={handleSubmit} schema={schema}>
-      {({ register }) => (
+      {({ register, formState }) => (
         <>
           <InputField
             size="lg"
-            disabled={isFormDisabled}
+            disabled={formState.isSubmitting}
             label="Username"
             registration={register('username')}
           />
           <InputField
             size="lg"
-            disabled={isFormDisabled}
+            disabled={formState.isSubmitting}
             label="Email"
             registration={register('email')}
             type="email"
           />
           <InputField
             size="lg"
-            disabled={isFormDisabled}
+            disabled={formState.isSubmitting}
             label="Password"
             registration={register('password')}
             type="password"
           />
 
-          <Button>Sign up</Button>
+          <Button type="submit" disabled={formState.isSubmitting}>
+            Sign up
+          </Button>
         </>
       )}
     </Form>
